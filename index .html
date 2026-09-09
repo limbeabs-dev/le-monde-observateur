@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Le Monde — Observateur</title>
+<style>
+  *{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111;color:#eee;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  #app{position:fixed;inset:0}
+  canvas{display:block}
+  .glass{background:rgba(15,18,20,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 35px rgba(0,0,0,.3)}
+  #hud{position:fixed;left:14px;top:14px;right:14px;display:flex;justify-content:space-between;gap:10px;pointer-events:none}
+  .pill{pointer-events:auto;padding:10px 13px;border-radius:14px;font-size:13px;line-height:1.25}
+  #clock{font-weight:700}.muted{opacity:.65;font-weight:400}
+  #side{position:fixed;right:14px;top:70px;width:255px;border-radius:18px;padding:14px;display:none}
+  #side h3{margin:0 0 8px;font-size:16px}.agent{margin:9px 0;padding:10px;border-radius:12px;background:rgba(255,255,255,.06)}
+  .row{display:flex;justify-content:space-between;font-size:12px;margin:4px 0}.bar{height:5px;background:#333;border-radius:9px;overflow:hidden;margin-top:3px}.bar i{display:block;height:100%;background:#ddd;border-radius:9px}
+  #log{position:fixed;left:14px;bottom:14px;width:min(370px,calc(100vw - 28px));border-radius:18px;padding:12px;display:none}
+  #log .title{font-size:12px;font-weight:700;margin-bottom:6px}.event{font-size:11px;opacity:.8;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+  #hint{position:fixed;left:50%;bottom:15px;transform:translateX(-50%);padding:9px 13px;border-radius:13px;font-size:11px;opacity:.72;text-align:center;pointer-events:none}
+  #start{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 45%,#344047,#0e1112 70%);z-index:5}
+  #card{width:min(510px,calc(100vw - 30px));padding:28px;border-radius:24px;text-align:center}
+  #card h1{font-size:31px;margin:0 0 8px;letter-spacing:-1px}.sub{opacity:.72;line-height:1.55;font-size:14px}
+  button{border:0;border-radius:14px;padding:13px 18px;background:#f1f1ed;color:#111;font-weight:750;margin-top:18px;font-size:14px}
+  #status{margin-top:12px;font-size:11px;opacity:.55}
+  .tag{display:inline-block;border:1px solid rgba(255,255,255,.12);padding:4px 7px;border-radius:8px;margin:2px;font-size:10px;opacity:.75}
+  @media (max-width:700px){#side{left:14px;right:14px;width:auto;top:auto;bottom:82px;max-height:42vh;overflow:auto}.pill{font-size:12px}#hint{bottom:16px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<div id="start">
+  <div id="card" class="glass">
+    <div style="font-size:12px;letter-spacing:2px;opacity:.5;margin-bottom:10px">LE MONDE</div>
+    <h1>Tu n'es qu'un observateur.</h1>
+    <div class="sub">
+      Elias et Maya vivent ici sans savoir qu'ils sont observés.<br>
+      Ils ont des besoins, des souvenirs, des préférences et prennent leurs propres décisions.
+      Le monde garde son état entre tes visites.
+    </div>
+    <div style="margin-top:14px">
+      <span class="tag">temps continu</span><span class="tag">mémoire</span><span class="tag">besoins</span><span class="tag">initiatives</span>
+    </div>
+    <button id="enter">Entrer dans le monde</button>
+    <div id="status">Simulation locale — sauvegarde automatique</div>
+  </div>
+</div>
+
+<div id="hud">
+  <div id="clock" class="pill glass">—</div>
+  <div id="state" class="pill glass">OBSERVATION <span class="muted">• caméra libre</span></div>
+</div>
+
+<div id="side" class="glass">
+  <h3>Vie intérieure</h3>
+  <div id="agents"></div>
+</div>
+
+<div id="log" class="glass">
+  <div class="title">DERNIERS ÉVÉNEMENTS</div>
+  <div id="events"></div>
+</div>
+
+<div id="hint" class="glass">Glisse pour regarder • pince pour zoomer • double-tape pour les infos</div>
+
+<script>
+// iPhone/Safari fallback: the entrance button must always respond even if 3D libraries are slow to load.
+window.__enteredWorld = false;
+window.addEventListener("DOMContentLoaded", () => {
+  const b = document.getElementById("enter");
+  if (b) b.addEventListener("click", () => {
+    window.__enteredWorld = true;
+    const start = document.getElementById("start");
+    if (start) start.style.display = "none";
+  }, {passive:true});
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.min.js"></script>
+<script>
+
+const KEY="le_monde_persistent_v1";
+const now=()=>Date.now();
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const rand=(a,b)=>a+Math.random()*(b-a);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+const defaultWorld={
+  version:1, worldTime: 8*60+15, lastWallClock:now(),
+  weather:"clair",
+  agents:{
+    elias:{id:"elias",name:"Elias",age:29,sex:"m",pos:[-1.4,0,0.2],rot:0,
+      needs:{hunger:.28,energy:.72,social:.42,fun:.55,hygiene:.78},
+      mood:.62,goal:"préparer quelque chose à manger",action:"cuisine",target:[-2.8,0,-1.2],
+      traits:{curiosity:.72,social:.58,order:.46,creativity:.63},
+      memories:["Ce matin, Maya semblait préoccupée.","Il aime prendre son temps pour cuisiner."],
+      relationships:{maya:.72}},
+    maya:{id:"maya",name:"Maya",age:27,sex:"f",pos:[1.8,0,1.0],rot:Math.PI, 
+      needs:{hunger:.34,energy:.64,social:.68,fun:.71,hygiene:.82},
+      mood:.74,goal:"écouter de la musique et se détendre",action:"salon",target:[2.5,0,1.8],
+      traits:{curiosity:.81,social:.76,order:.38,creativity:.84},
+      memories:["Elle aimerait sortir plus tard.","Elle apprécie les moments calmes avec Elias."],
+      relationships:{elias:.74}}
+  },
+  objects:{door:true,lights:true,coffeeCup:[1.2,0.82,1.0]},
+  events:["Le monde continue de vivre.","Elias s'est levé avant Maya."]
+};
+let world=load();
+function load(){
+  try{
+    const s=JSON.parse(localStorage.getItem(KEY));
+    if(s && s.version===1){
+      const elapsed=Math.max(0,now()-s.lastWallClock);
+      catchUp(s,elapsed);
+      s.lastWallClock=now();
+      return s;
+    }
+  }catch(e){}
+  return structuredClone(defaultWorld);
+}
+function save(){world.lastWallClock=now();localStorage.setItem(KEY,JSON.stringify(world));}
+function addEvent(t){world.events.unshift(formatTime()+" — "+t);world.events=world.events.slice(0,8)}
+function formatTime(){
+  const h=Math.floor(world.worldTime/60)%24,m=Math.floor(world.worldTime%60);
+  return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
+}
+function catchUp(w,ms){
+  // 1 minute of simulation per 1 second of real absence, capped to 12h per visit.
+  let mins=Math.min(720,ms/1000);
+  const steps=Math.ceil(mins/5);
+  for(let i=0;i<steps;i++) simulateTick(w,Math.min(5,mins-i*5));
+  if(ms>900000) addEventTo(w,`Pendant ton absence, plusieurs heures se sont écoulées.`);
+}
+function addEventTo(w,t){w.events.unshift("— "+t);w.events=w.events.slice(0,8)}
+
+function chooseAction(a,other){
+  const n=a.needs;
+  if(n.hunger>.78) return ["cuisine","manger"];
+  if(n.energy<.22) return ["repos","se reposer"];
+  if(n.hygiene<.20) return ["salle_de_bain","prendre une douche"];
+  if(n.social<.20 && other && distance2(a.pos,other.pos)<10) return ["social","aller parler à Maya"];
+  if(n.fun<.20) return ["loisir","faire quelque chose d'amusant"];
+  const options=[["cuisine","préparer quelque chose"],["salon","se poser un moment"],["fenetre","regarder dehors"],["rangement","ranger un peu"],["bureau","faire une activité personnelle"]];
+  if(a.traits.creativity>.75 && Math.random()<.35) return ["creation","faire une activité créative"];
+  return pick(options);
+}
+function targetFor(action,a,other){
+  const T={
+    cuisine:[-2.8,0,-1.2],repos:[1.5,0,2.6],salle_de_bain:[-3.2,0,2.4],
+    social:other?other.pos:[0,0,0],loisir:[2.2,0,1.9],salon:[1.0,0,1.5],
+    fenetre:[-0.5,0,-3.0],rangement:[0.0,0,0.1],bureau:[3.1,0,-2.2],creation:[3.0,0,-1.0]
+  };
+  return T[action] ? [...T[action]] : [0,0,0];
+}
+function distance2(a,b){let dx=a[0]-b[0],dz=a[2]-b[2];return Math.hypot(dx,dz)}
+function simulateTick(w,mins){
+  w.worldTime=(w.worldTime+mins)%1440;
+  const arr=Object.values(w.agents);
+  for(const a of arr){
+    const other=arr.find(x=>x.id!==a.id);
+    a.needs.hunger=clamp(a.needs.hunger+mins*.0018,0,1);
+    a.needs.energy=clamp(a.needs.energy-mins*.0014,0,1);
+    a.needs.social=clamp(a.needs.social-mins*(a.traits.social*.0009),0,1);
+    a.needs.fun=clamp(a.needs.fun-mins*.0008,0,1);
+    a.needs.hygiene=clamp(a.needs.hygiene-mins*.0005,0,1);
+
+    if(Math.random()<mins/45){
+      const [act,label]=chooseAction(a,other);
+      if(act!==a.action){a.action=act;a.goal=label;a.target=targetFor(act,a,other)}
+    }
+    const d=distance2(a.pos,a.target);
+    if(d>.08){
+      const speed=mins*.028;
+      a.pos[0]+=clamp(a.target[0]-a.pos[0],-speed,speed);
+      a.pos[2]+=clamp(a.target[2]-a.pos[2],-speed,speed);
+    }else{
+      if(a.action==="manger"){a.needs.hunger=clamp(a.needs.hunger-mins*.012,0,1)}
+      if(a.action==="repos"){a.needs.energy=clamp(a.needs.energy+mins*.018,0,1)}
+      if(a.action==="social"){a.needs.social=clamp(a.needs.social+mins*.014,0,1)}
+      if(a.action==="loisir"||a.action==="creation"){a.needs.fun=clamp(a.needs.fun+mins*.012,0,1)}
+      if(a.action==="salle_de_bain"){a.needs.hygiene=clamp(a.needs.hygiene+mins*.02,0,1)}
+    }
+    const avg=(1-a.needs.hunger + a.needs.energy + a.needs.social + a.needs.fun + a.needs.hygiene)/5;
+    a.mood=clamp(avg,0,1);
+  }
+  // occasional relationship moments
+  if(distance2(arr[0].pos,arr[1].pos)<1.1 && Math.random()<mins*.018){
+    arr[0].needs.social=clamp(arr[0].needs.social+.04,0,1);
+    arr[1].needs.social=clamp(arr[1].needs.social+.04,0,1);
+    arr[0].memories.unshift("Un moment partagé avec Maya.");arr[0].memories=arr[0].memories.slice(0,5);
+    arr[1].memories.unshift("Un moment partagé avec Elias.");arr[1].memories=arr[1].memories.slice(0,5);
+  }
+}
+
+let running=false, last=now(), selected=null;
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x0e1112);
+scene.fog=new THREE.Fog(0x0e1112,12,28);
+const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.05,100);
+camera.position.set(7,5.6,8);
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+document.querySelector("#app").appendChild(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xc9d8df,0x33281f,2.0));
+const sun=new THREE.DirectionalLight(0xfff0dc,3.0);sun.position.set(-5,9,4);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);scene.add(sun);
+
+function mat(c,r=.65,m=0){return new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m})}
+const floor=new THREE.Mesh(new THREE.BoxGeometry(12,.22,10),mat(0x6b5b4a,.9));floor.position.y=-.12;floor.receiveShadow=true;scene.add(floor);
+const rug=new THREE.Mesh(new THREE.BoxGeometry(5,.035,3.2),mat(0x34373a,1));rug.position.set(1,0.02,1.1);scene.add(rug);
+function wall(x,y,z,ry=0){
+ const g=new THREE.Mesh(new THREE.BoxGeometry(x,y,z),mat(0xddd9d1,.92));g.rotation.y=ry;g.position.y=y/2;g.castShadow=true;g.receiveShadow=true;scene.add(g);return g;
+}
+wall(12,4,.15,0).position.z=-4.9; wall(.15,4,10,0).position.x=-5.9;
+function box(x,y,z,px,py,pz,c,r=.6){
+ const m=new THREE.Mesh(new THREE.BoxGeometry(x,y,z),mat(c,r));m.position.set(px,py,pz);m.castShadow=m.receiveShadow=true;scene.add(m);return m;
+}
+box(3.1,1.05,.65,-3.5,.52,-1.8,0x3a2f28,.75); // kitchen
+box(1.2,.75,2.5,-4.3,.38,-.4,0x555b5c,.7);
+box(3.2,.18,1.55,.7,1.05,.0,0x5c4635,.5);
+for(const p of [[-.55,0,-.6],[1.7,0,-.6],[-.55,0,.8],[1.7,0,.8]]) box(.12,.9,.12,p[0],.45,p[2],0x292522,.7);
+box(2.8,.65,1.2,1.7,.55,2.1,0x544b45,.9);box(2.8,.75,.18,1.7,.72,2.62,0x403a37,.9);
+box(.9,.08,1.0,3.1,.9,-1.8,0x8b765f,.8); // desk
+box(1.0,1.8,.12,-3.9,.9,3.7,0x25282a,.5); // bathroom divider
+const windowFrame=box(3.0,2.0,.08,-1.3,2.35,-4.78,0x202326,.3);
+const outside=new THREE.Mesh(new THREE.PlaneGeometry(2.7,1.7),new THREE.MeshBasicMaterial({color:0x6e8b9a}));
+outside.position.set(-1.3,2.35,-4.72);outside.rotation.x=0;scene.add(outside);
+
+function chair(px,pz){
+ box(.55,.12,.55,px,.48,pz,0x272524,.75);box(.12,.9,.12,px,.15,pz,0x272524,.75);box(.55,.8,.12,px,.82,pz+.23,0x272524,.75)
+}
+chair(-.1,-.9);chair(2.35,-.9);
+function plant(x,z){
+ const pot= new THREE.Mesh(new THREE.CylinderGeometry(.28,.22,.35,16),mat(0x6c5140,.8));pot.position.set(x,.18,z);pot.castShadow=true;scene.add(pot);
+ for(let i=0;i<6;i++){let l=new THREE.Mesh(new THREE.SphereGeometry(.18,10,8),mat(0x435a3d,.9));l.scale.set(.7,1.6,.5);l.position.set(x+Math.cos(i)*.2,.6+Math.sin(i)*.12,z+Math.sin(i)*.2);l.castShadow=true;scene.add(l)}
+}
+plant(4.7,-3.6);plant(4.6,3.6);
+
+function makePerson(a){
+ const g=new THREE.Group();g.name=a.name;
+ const skin=mat(a.sex==="m"?0xb88466:0xd39b7b,.8);
+ const clothes=mat(a.sex==="m"?0x26313a:0x6b4557,.82);
+ const pants=mat(a.sex==="m"?0x202329:0x29262b,.9);
+ const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.32,.68,6,12),clothes);torso.position.y=1.18;torso.castShadow=true;g.add(torso);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.27,16,12),skin);head.position.y=1.92;head.castShadow=true;g.add(head);
+ const hair=new THREE.Mesh(new THREE.SphereGeometry(.28,16,12,0,Math.PI*2,0,Math.PI*.55),mat(a.sex==="m"?0x33251f:0x241b1b,.9));hair.position.y=2.05;hair.castShadow=true;g.add(hair);
+ for(const x of [-.12,.12]){
+   const leg=new THREE.Mesh(new THREE.CapsuleGeometry(.105,.7,5,8),pants);leg.position.set(x,0.55,0);leg.castShadow=true;g.add(leg);
+ }
+ for(const x of [-.43,.43]){
+   const arm=new THREE.Mesh(new THREE.CapsuleGeometry(.09,.55,5,8),skin);arm.position.set(x,1.18,0);arm.rotation.z=x<0?-0.12:0.12;arm.castShadow=true;g.add(arm);
+ }
+ const shadow=new THREE.Mesh(new THREE.CircleGeometry(.38,20),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.22,depthWrite:false}));
+ shadow.rotation.x=-Math.PI/2;shadow.position.y=.015;g.add(shadow);
+ g.userData.agentId=a.id;scene.add(g);return g;
+}
+const meshes={elias:makePerson(world.agents.elias),maya:makePerson(world.agents.maya)};
+
+let camYaw=.65,camPitch=.47,camDist=10,camTarget=new THREE.Vector3(0,1,0);
+function updateCamera(){
+ camPitch=clamp(camPitch,.15,1.35);camDist=clamp(camDist,3.5,18);
+ const x=camTarget.x+Math.sin(camYaw)*Math.cos(camPitch)*camDist;
+ const y=camTarget.y+Math.sin(camPitch)*camDist;
+ const z=camTarget.z+Math.cos(camYaw)*Math.cos(camPitch)*camDist;
+ camera.position.set(x,y,z);camera.lookAt(camTarget);
+}
+updateCamera();
+
+let dragging=false,lastX=0,lastY=0,pinch=0;
+renderer.domElement.addEventListener("pointerdown",e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)});
+renderer.domElement.addEventListener("pointermove",e=>{
+ if(!dragging)return; const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;
+ camYaw-=dx*.006;camPitch+=dy*.004;updateCamera();
+});
+renderer.domElement.addEventListener("pointerup",()=>dragging=false);
+renderer.domElement.addEventListener("wheel",e=>{camDist*=Math.exp(e.deltaY*.001);updateCamera()},{passive:true});
+let lastTouch=0;
+renderer.domElement.addEventListener("touchend",e=>{if(e.touches.length===0 && e.changedTouches.length){let t=Date.now();if(t-lastTouch<280){showSide();}lastTouch=t}},{passive:true});
+renderer.domElement.addEventListener("dblclick",showSide);
+addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+
+function showSide(){document.querySelector("#side").style.display=document.querySelector("#side").style.display==="block"?"none":"block"}
+document.querySelector("#state").onclick=showSide;
+
+function updateUI(){
+ const h=Math.floor(world.worldTime/60)%24,m=Math.floor(world.worldTime%60);
+ const phase=h>=7&&h<19?"JOUR":"NUIT";
+ document.querySelector("#clock").innerHTML=`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")} <span class="muted">• ${phase}</span>`;
+ const html=Object.values(world.agents).map(a=>{
+   const mood=Math.round(a.mood*100);
+   return `<div class="agent"><b>${a.name}</b> <span class="muted">· ${a.age} ans</span>
+   <div style="font-size:11px;opacity:.65;margin:4px 0 8px">${a.goal}</div>
+   ${bar("Énergie",a.needs.energy)}${bar("Faim",1-a.needs.hunger)}${bar("Social",a.needs.social)}${bar("Humeur",a.mood)}
+   <div style="margin-top:7px;font-size:10px;opacity:.5">Souvenir : ${a.memories[0]}</div></div>`
+ }).join("");
+ document.querySelector("#agents").innerHTML=html;
+ document.querySelector("#events").innerHTML=world.events.map(e=>`<div class="event">${e}</div>`).join("");
+}
+function bar(n,v){return `<div class="row"><span>${n}</span><span>${Math.round(v*100)}%</span></div><div class="bar"><i style="width:${Math.round(v*100)}%"></i></div>`}
+
+function animateAgents(){
+ for(const a of Object.values(world.agents)){
+   const m=meshes[a.id]; m.position.set(a.pos[0],0,a.pos[2]);
+   const dx=a.target[0]-a.pos[0],dz=a.target[2]-a.pos[2];
+   if(Math.hypot(dx,dz)>.05) m.rotation.y=Math.atan2(dx,dz);
+   const walking=Math.hypot(dx,dz)>.08;
+   const t=performance.now()*.008;
+   m.position.y=walking?Math.abs(Math.sin(t))*0.025:0;
+ }
+ // subtle day/night
+ const h=Math.floor(world.worldTime/60)%24;
+ const daylight=clamp(Math.sin((h-6)/12*Math.PI),0,1);
+ sun.intensity=.7+daylight*2.5;
+ scene.background.setHSL(.58,.10,.035+daylight*.025);
+ scene.fog.color.copy(scene.background);
+}
+
+function loop(){
+ requestAnimationFrame(loop);
+ if(running){
+   const t=now(), dt=Math.min(250,t-last);last=t;
+   // 1 real second = 1 simulated minute
+   simulateTick(world,dt/1000);
+   if(Math.floor(world.worldTime*10)%20===0) save();
+   animateAgents(); updateUI();
+ }
+ renderer.render(scene,camera);
+}
+loop();
+
+document.querySelector("#enter").onclick=()=>{
+ document.querySelector("#start").style.display="none";window.__enteredWorld=true;running=true;last=now();save();updateUI();
+ addEvent("Tu entres dans le monde. Ils ne peuvent pas te voir.");
+}
+function addEvent(t){addEventTo(world,t)}
+document.addEventListener("visibilitychange",()=>{if(document.hidden)save();else{const e=now()-world.lastWallClock;catchUp(world,e);world.lastWallClock=now();last=now();updateUI()}})
+addEventListener("pagehide",save);
+setInterval(save,5000);
+</script>
+</body>
+</html>
