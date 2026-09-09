@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Le Monde — Observateur</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b0d;color:#f2f2ee;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;touch-action:none}
+#app{position:fixed;inset:0}canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.glass{background:rgba(12,15,17,.68);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.13);box-shadow:0 12px 38px rgba(0,0,0,.32)}
+#start{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at 50% 40%,#3b474b 0,#141a1c 42%,#080b0d 100%)}
+#card{width:min(520px,calc(100vw - 30px));padding:30px 26px;border-radius:26px;text-align:center}
+.kicker{font-size:11px;letter-spacing:3px;opacity:.5;margin-bottom:12px}.title{font-size:32px;font-weight:750;letter-spacing:-1.2px;margin:0 0 10px}.sub{font-size:14px;line-height:1.6;opacity:.73}.tags{margin:17px 0 4px}.tag{display:inline-block;border:1px solid rgba(255,255,255,.13);padding:5px 8px;border-radius:9px;margin:2px;font-size:10px;opacity:.75}
+#enter{appearance:none;-webkit-appearance:none;border:0;border-radius:15px;padding:14px 21px;background:#f2f2ee;color:#101214;font-weight:800;margin-top:18px;font-size:15px;cursor:pointer;position:relative;z-index:60;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#status{margin-top:12px;font-size:11px;opacity:.5}
+#hud{position:fixed;z-index:10;left:14px;right:14px;top:calc(10px + env(safe-area-inset-top));display:flex;justify-content:space-between;gap:10px;pointer-events:none}.pill{padding:10px 13px;border-radius:14px;font-size:12px}.muted{opacity:.55;font-weight:400}
+#side{position:fixed;z-index:11;right:14px;top:72px;width:265px;border-radius:18px;padding:14px;display:none}.sideTitle{font-size:13px;font-weight:750;margin-bottom:7px}.agent{margin:8px 0;padding:10px;border-radius:12px;background:rgba(255,255,255,.055)}.agent b{font-size:13px}.row{display:flex;justify-content:space-between;font-size:11px;margin:4px 0}.bar{height:5px;background:rgba(255,255,255,.12);border-radius:10px;overflow:hidden}.bar i{display:block;height:100%;background:#eee;border-radius:10px}
+#log{position:fixed;z-index:11;left:14px;bottom:14px;width:min(390px,calc(100vw - 28px));border-radius:18px;padding:12px;display:none}.logTitle{font-size:11px;font-weight:750;margin-bottom:5px}.event{font-size:10px;opacity:.75;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+#hint{position:fixed;z-index:9;left:50%;bottom:15px;transform:translateX(-50%);padding:9px 13px;border-radius:13px;font-size:10px;opacity:.68;white-space:nowrap;pointer-events:none}
+@media(max-width:700px){#side{left:14px;right:14px;width:auto;top:auto;bottom:78px;max-height:43vh;overflow:auto}.title{font-size:29px}#hint{bottom:13px;font-size:9px}.pill{font-size:11px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="start">
+ <div id="card" class="glass">
+  <div class="kicker">LE MONDE</div>
+  <h1 class="title">Tu n'es qu'un observateur.</h1>
+  <div class="sub">Elias et Maya vivent ici sans savoir qu'ils sont observés.<br>Ils ont des besoins, des souvenirs, des préférences et prennent leurs propres décisions.</div>
+  <div class="tags"><span class="tag">temps continu</span><span class="tag">mémoire</span><span class="tag">besoins</span><span class="tag">initiatives</span></div>
+  <button id="enter" type="button" onclick="enterWorld()">Entrer dans le monde</button>
+  <div id="status">Simulation locale — sauvegarde automatique</div>
+ </div>
+</div>
+<div id="hud"><div id="clock" class="pill glass">—</div><div id="state" class="pill glass">OBSERVATION <span class="muted">• caméra libre</span></div></div>
+<div id="side" class="glass"><div class="sideTitle">VIE INTÉRIEURE</div><div id="agents"></div></div>
+<div id="log" class="glass"><div class="logTitle">DERNIERS ÉVÉNEMENTS</div><div id="events"></div></div>
+<div id="hint" class="glass">Glisse pour regarder • pince/roulette pour zoomer • double-tape pour les infos</div>
+
+<!-- This tiny bootstrap is deliberately isolated: the entry button never depends on a 3D library. -->
+<script>
+function enterWorld(){
+  window.__worldStarted=true;
+  var s=document.getElementById('start');
+  if(s){s.style.display='none';s.setAttribute('aria-hidden','true');}
+  var h=document.getElementById('status'); if(h) h.textContent='Monde en cours…';
+  if(typeof window.startSimulation==='function') window.startSimulation();
+}
+window.__worldStarted=false;
+</script>
+<script>
+(function(){
+'use strict';
+var canvas=document.createElement('canvas');canvas.id='world';document.getElementById('app').appendChild(canvas);var ctx=canvas.getContext('2d');
+var W=1,H=1,dpr=1,started=false,lastFrame=performance.now(),saveTimer=0;
+var cam={yaw:-0.35,pitch:-0.12,zoom:1.0};var drag=false,lastX=0,lastY=0,pinch=0;
+var KEY='le_monde_observateur_v2';
+var world={time:Date.now(),day:1,events:[],agents:{
+ elias:{name:'Elias',age:29,x:-1.1,z:.2,energy:72,hunger:28,social:54,mood:67,goal:'se préparer à manger',action:'dans la cuisine',memory:['Il aime les matins calmes.','Il garde souvent une idée en tête avant de parler.'],next:0},
+ maya:{name:'Maya',age:27,x:1.0,z:-.35,energy:64,hunger:35,social:68,mood:74,goal:'ranger un peu',action:'près du salon',memory:['Elle remarque facilement les changements autour d’elle.','Elle préfère décider sur le moment.'],next:0}
+}};
+function resize(){dpr=Math.min(2,window.devicePixelRatio||1);W=innerWidth;H=innerHeight;canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}resize();addEventListener('resize',resize);
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))} function rnd(a,b){return a+Math.random()*(b-a)}
+function load(){try{var s=localStorage.getItem(KEY);if(s){var old=JSON.parse(s);if(old&&old.agents){world=old;var elapsed=Math.max(0,Date.now()-(old.realSaved||Date.now()));catchUp(elapsed);}}}catch(e){}}
+function save(){try{world.realSaved=Date.now();localStorage.setItem(KEY,JSON.stringify(world))}catch(e){}}
+function addEvent(t){world.events.unshift({t:world.time,text:t});world.events=world.events.slice(0,7)}
+function catchUp(ms){var minutes=Math.min(720,ms/1000);var steps=Math.max(1,Math.floor(minutes/5));for(var i=0;i<steps;i++)simulate(5);world.time=Date.now();}
+function choose(a,other){
+ var opts=[];if(a.hunger>72)opts.push(['manger',.9]);if(a.energy<24)opts.push(['se reposer',.85]);if(a.social<25)opts.push(['chercher de la compagnie',.7]);if(a.energy>45&&a.hunger<60)opts.push(['faire quelque chose',.45]);if(a.hunger<55&&a.energy>30)opts.push(['ranger',.3]);opts.push(['changer d’idée',.18]);
+ var r=Math.random(),sum=0,choice=opts[opts.length-1][0];for(var i=0;i<opts.length;i++){sum+=opts[i][1];if(r<sum){choice=opts[i][0];break}}a.goal=choice;a.action=choice;
+ if(choice==='chercher de la compagnie'&&Math.random()<.5){a.x=other.x+rnd(-.45,.45);a.z=other.z+rnd(-.45,.45);a.social=clamp(a.social+10,0,100);addEvent(a.name+' rejoint '+other.name+'.')}
+ if(choice==='changer d’idée'&&Math.random()<.3){a.goal='observer la pièce';a.action='observe autour de lui'}
+}
+function simulate(dt){
+ world.time+=dt*60000;
+ var A=world.agents.elias,B=world.agents.maya;
+ [A,B].forEach(function(a){a.hunger=clamp(a.hunger+dt*.075,0,100);a.energy=clamp(a.energy-dt*.035,0,100);a.social=clamp(a.social-dt*.018,0,100);a.mood=clamp(a.mood+(50-(a.hunger+a.energy+a.social)/3)*.002*dt,0,100);if(world.time>a.next){choose(a,a===A?B:A);a.next=world.time+rnd(12,35)*60000}
+ if(a.goal==='manger'){a.hunger=clamp(a.hunger-dt*.32,0,100);a.energy=clamp(a.energy+dt*.03,0,100);a.action='mange quelque chose'}
+ if(a.goal==='se reposer'){a.energy=clamp(a.energy+dt*.3,0,100);a.action='se repose'}
+ if(a.goal==='ranger'){a.energy=clamp(a.energy-dt*.04,0,100);a.action='range la pièce'}
+ if(a.goal==='faire quelque chose'){a.action=Math.random()<.5?'prépare quelque chose':'s’occupe tranquillement'}
+ });
+ if(A.hunger<25&&Math.random()<.008)A.memory.unshift('Il s’est senti particulièrement bien après avoir mangé.');
+ if(B.social<35&&Math.random()<.008)B.memory.unshift('Elle a eu envie de parler à quelqu’un.');
+ A.memory=A.memory.slice(0,5);B.memory=B.memory.slice(0,5);
+ if(Math.random()<.015)addEvent(Math.random()<.5?'Un moment ordinaire se déroule dans la maison.':'Quelque chose attire brièvement leur attention.');
+}
+function startLoop(){if(started)return;started=true;load();if(!world.events.length)addEvent('Le monde continue sa vie.');requestAnimationFrame(loop);updateUI()}
+window.startSimulation=startLoop;
+function loop(t){var real=(t-lastFrame)/1000;lastFrame=t;if(real>2)real=2;if(window.__worldStarted){simulate(real/60)}saveTimer+=real;if(saveTimer>5){saveTimer=0;save()}render();updateUI();requestAnimationFrame(loop)}
+function updateUI(){
+ var d=new Date(world.time);var day=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'][d.getDay()];var c=document.getElementById('clock');if(c)c.textContent=day+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+ var ag=document.getElementById('agents');if(ag)ag.innerHTML=[world.agents.elias,world.agents.maya].map(function(a){return '<div class="agent"><b>'+a.name+', '+a.age+' ans</b><div class="row"><span>Humeur</span><span>'+Math.round(a.mood)+'%</span></div><div class="bar"><i style="width:'+a.mood+'%"></i></div><div class="row"><span>Énergie</span><span>'+Math.round(a.energy)+'%</span></div><div class="row"><span>Faim</span><span>'+Math.round(a.hunger)+'%</span></div><div class="row"><span>État</span><span>'+a.action+'</span></div></div>'}).join('');
+ var ev=document.getElementById('events');if(ev)ev.innerHTML=world.events.map(function(e){return '<div class="event">'+new Date(e.t).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+' — '+e.text+'</div>'}).join('');
+}
+function showPanels(){document.getElementById('side').style.display='block';document.getElementById('log').style.display='block'}
+function hidePanels(){document.getElementById('side').style.display='none';document.getElementById('log').style.display='none'}
+function project(x,y,z){var cy=Math.cos(cam.yaw),sy=Math.sin(cam.yaw),cp=Math.cos(cam.pitch),sp=Math.sin(cam.pitch);var X=x*cy-z*sy,Z=x*sy+z*cy;var Y=y*cp-Z*sp;Z=y*sp+Z*cp;var depth=7-Z;var scale=390*cam.zoom/Math.max(1,depth);return {x:W/2+X*scale,y:H/2-Y*scale,z:Z,scale:scale}}
+function poly(points,fill,stroke){ctx.beginPath();points.forEach(function(p,i){i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)});ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.stroke()}}
+function box(x,y,z,w,h,d,fill){var p=[project(x-w/2,y,z-d/2),project(x+w/2,y,z-d/2),project(x+w/2,y,z+d/2),project(x-w/2,y,z+d/2),project(x-w/2,y+h,z-d/2),project(x+w/2,y+h,z-d/2),project(x+w/2,y+h,z+d/2),project(x-w/2,y+h,z+d/2)];poly([p[0],p[1],p[5],p[4]],fill);poly([p[1],p[2],p[6],p[5]],fill);poly([p[2],p[3],p[7],p[6]],fill)}
+function render(){
+ var night=(Math.cos((world.time/86400000)*Math.PI*2-Math.PI*.15)+1)/2;var grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,night>.72?'#101a25':'#9ba6a8');grad.addColorStop(1,night>.72?'#263039':'#303538');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+ // room shell / floor
+ box(0,-.04,0,7,.08,5.4,night>.72?'#34312e':'#8b8175');
+ // back wall and side wall, deliberately simple but depth-based
+ box(0,0,2.65,7,3.4,.08,night>.72?'#252a2b':'#c8c2b7');box(-3.45,0,0,.08,3.4,5.4,night>.72?'#202426':'#b5aea3');
+ // window
+ box(1.25,1.55,2.57,2.2,1.35,.04,night>.72?'#17222c':'#738b98');
+ // kitchen counter, table, sofa
+ box(-1.85,.55,1.45,2.2,1.05,.65,night>.72?'#3e4544':'#77746d');box(-.2,.48,-.1,1.65,.08,1.0,night>.72?'#5c5147':'#725d4c');box(-.2,.05,-.1,1.55,.55,.9,night>.72?'#40362e':'#604c3e');box(1.75,.45,.55,2.1,.7,.8,night>.72?'#40464a':'#6c716e');
+ // rug
+ var r=[project(-.2,.055,-.25),project(1.45,.055,-.25),project(1.45,.055,-1.35),project(-.2,.055,-1.35)];poly(r,night>.72?'#403a35':'#a99b8b');
+ drawPerson(world.agents.elias,false);drawPerson(world.agents.maya,true);
+ // subtle glass observer effect
+ var vg=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.25,W/2,H/2,Math.max(W,H)*.75);vg.addColorStop(0,'rgba(255,255,255,0)');vg.addColorStop(1,'rgba(0,0,0,.25)');ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+}
+function drawPerson(a,woman){var p=project(a.x,0,a.z);var s=p.scale;var bob=(Math.sin(world.time/500+a.x*3)*.018);var skin=woman?'#b98f76':'#c39b82';var shirt=woman?'#5b5966':'#37444b';var head=project(a.x,.98+bob,a.z);var body=project(a.x,.55+bob,a.z);var leg1=project(a.x-.13,.05,a.z),leg2=project(a.x+.13,.05,a.z);ctx.lineWidth=1;
+ ctx.strokeStyle='#17191a';ctx.lineWidth=Math.max(3,s*.018);ctx.beginPath();ctx.moveTo(leg1.x,leg1.y);ctx.lineTo(body.x-.05*s,body.y);ctx.moveTo(leg2.x,leg2.y);ctx.lineTo(body.x+.05*s,body.y);ctx.stroke();
+ ctx.fillStyle=shirt;ctx.beginPath();ctx.ellipse(body.x,body.y,s*.12,s*.22,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle=skin;ctx.beginPath();ctx.arc(head.x,head.y,s*(woman?.09:.085),0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='rgba(10,10,10,.7)';ctx.font='600 '+Math.max(10,Math.min(14,s*.035))+'px -apple-system,sans-serif';ctx.textAlign='center';ctx.fillText(a.name,head.x,head.y-s*.13);
+}
+// Touch / mouse observer camera
+canvas.addEventListener('pointerdown',function(e){drag=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',function(e){if(!drag)return;var dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;cam.yaw-=dx*.006;cam.pitch=clamp(cam.pitch-dy*.004,-.65,.35)});
+canvas.addEventListener('pointerup',function(){drag=false});canvas.addEventListener('pointercancel',function(){drag=false});
+canvas.addEventListener('wheel',function(e){e.preventDefault();cam.zoom=clamp(cam.zoom*(e.deltaY>0?.92:1.08),.65,1.7)},{passive:false});
+var lastTap=0;canvas.addEventListener('pointerup',function(e){var now=Date.now();if(now-lastTap<300){showPanels()}lastTap=now});
+var touches={};canvas.addEventListener('touchstart',function(e){for(var t of e.changedTouches)touches[t.identifier]={x:t.clientX,y:t.clientY};if(Object.keys(touches).length===2){var q=Object.values(touches);pinch=Math.hypot(q[0].x-q[1].x,q[0].y-q[1].y)}} ,{passive:false});
+canvas.addEventListener('touchmove',function(e){if(Object.keys(touches).length!==2)return;for(var t of e.changedTouches)if(touches[t.identifier]){touches[t.identifier].x=t.clientX;touches[t.identifier].y=t.clientY}var q=Object.values(touches);if(q.length===2){var n=Math.hypot(q[0].x-q[1].x,q[0].y-q[1].y);if(pinch){cam.zoom=clamp(cam.zoom*(n/pinch),.65,1.7)}pinch=n}e.preventDefault()},{passive:false});canvas.addEventListener('touchend',function(e){for(var t of e.changedTouches)delete touches[t.identifier]},{passive:false});
+// keyboard support
+addEventListener('keydown',function(e){if(e.key==='i')showPanels();if(e.key==='Escape')hidePanels();if(e.key==='+'||e.key==='=')cam.zoom=clamp(cam.zoom*1.08,.65,1.7);if(e.key==='-')cam.zoom=clamp(cam.zoom*.92,.65,1.7)});
+if(window.__worldStarted)startLoop();
+})();
+</script>
+</body></html>
