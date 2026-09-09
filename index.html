@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07080a">
+<title>DESTIN — Football Career V9</title>
+<style>
+:root{--bg:#07080a;--panel:#111318;--panel2:#0c0e11;--line:#282c33;--text:#f5f5f1;--muted:#92969f;--accent:#d8ff3f;--soft:#1b1e23;--gold:#f3c75f;--red:#ff6975}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg)}body{color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:radial-gradient(900px 520px at 50% -170px,#252a32 0,#0c0e12 54%,#050506 100%)}
+button,input,select{font:inherit}button{border:0}.app{width:100%;max-width:760px;margin:auto;min-height:100vh;padding:15px 14px 34px}.top{height:34px;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.brand{font-size:13px;font-weight:900;letter-spacing:.19em}.topright{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:11px}.screen{display:none}.screen.active{display:block}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.21em;color:var(--muted)}.title{font-size:clamp(40px,10vw,68px);line-height:.89;letter-spacing:-.065em;font-weight:950;margin:11px 0 17px}.lead{font-size:17px;line-height:1.55;color:#c6c9ce}.card{background:linear-gradient(145deg,rgba(20,22,27,.98),rgba(9,10,13,.98));border:1px solid var(--line);border-radius:24px;padding:19px;margin-top:15px;box-shadow:0 22px 65px rgba(0,0,0,.24)}
+.cta{width:100%;padding:16px;border-radius:16px;background:var(--accent);color:#080a06;font-weight:900;cursor:pointer;margin-top:13px}.secondary{background:#15181d;color:#e9e9e5;border:1px solid #30343b}.field{width:100%;background:#0a0b0e;border:1px solid #2c3037;color:var(--text);padding:14px;border-radius:15px;outline:none}.field:focus{border-color:var(--accent)}.label{font-size:10px;text-transform:uppercase;letter-spacing:.17em;color:var(--muted);margin:0 0 7px}.grid{display:grid;gap:11px}.two{grid-template-columns:1fr 1fr}.choicegrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.choice{min-height:91px;padding:15px;text-align:left;background:#0c0e11;border:1px solid #2b2e35;color:var(--text);border-radius:17px;cursor:pointer}.choice.selected{border-color:var(--accent);background:rgba(216,255,63,.065);box-shadow:inset 0 0 0 1px rgba(216,255,63,.15)}.choice b{font-size:14px}.choice span{display:block;color:var(--muted);font-size:11px;line-height:1.35;margin-top:5px}.progress{height:4px;background:#1b1e23;border-radius:8px;overflow:hidden;margin:9px 0 25px}.progress i{display:block;height:100%;background:var(--accent);width:20%;transition:.25s}.stephead{display:flex;justify-content:space-between;align-items:end}.pillrow{display:flex;gap:7px;flex-wrap:wrap}.pill{border:1px solid #2a2d34;border-radius:999px;padding:7px 10px;color:#b9bdc5;font-size:10px}
+.profile{display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:center}.avatar{width:57px;height:57px;border-radius:18px;background:linear-gradient(135deg,#414853,#14161a);display:grid;place-items:center;font-size:22px;font-weight:950}.name{font-size:20px;font-weight:900}.sub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.35}.age{font-size:29px;font-weight:950}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:11px}.stat{background:#0b0d10;border:1px solid #22252b;border-radius:15px;padding:11px}.stat small{display:block;font-size:8px;text-transform:uppercase;letter-spacing:.13em;color:var(--muted)}.stat strong{display:block;font-size:20px;margin-top:5px}.seasonline{display:flex;gap:6px;margin:17px 0 5px}.seasonline i{height:6px;background:#292c32;border-radius:9px;flex:1}.seasonline i.on{background:var(--accent)}.event{padding:20px}.eventtop{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px}.eventtype{color:var(--accent);font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:800}.week{font-size:10px;color:var(--muted)}.story{font-size:18px;line-height:1.57;letter-spacing:-.012em}.story .quote{color:#d5d7dc}.choices{display:grid;gap:9px;margin-top:18px}.action{background:#f1f1ed;color:#090a0b;border-radius:16px;padding:15px;text-align:left;cursor:pointer}.action b{font-size:14px}.action span{display:block;color:#6d7077;font-size:10px;line-height:1.35;margin-top:5px}.result{display:none;margin-top:16px;border-left:2px solid var(--accent);padding-left:13px;color:#c8cbd0;font-size:13px;line-height:1.5}.result.show{display:block}.news{display:none;margin-top:11px;background:#0c0e11;border:1px solid #252930;border-radius:15px;padding:13px;gap:10px}.news b{font-size:10px;letter-spacing:.12em}.news span{font-size:11px;color:#a2a5ad;line-height:1.4}.offer{margin-top:12px;border:1px solid rgba(216,255,63,.3);background:linear-gradient(145deg,rgba(216,255,63,.07),rgba(10,12,14,.95));border-radius:18px;padding:15px}.offer .club{font-size:20px;font-weight:950;margin-top:4px}.offer .small{font-size:10px;color:#9da1a8;margin-top:4px}.offer button{width:100%;margin-top:11px;background:var(--accent);padding:12px;border-radius:12px;font-weight:900}.sectiontitle{margin-top:21px;margin-bottom:10px;font-size:12px;text-transform:uppercase;letter-spacing:.18em;color:var(--muted)}.seasonhero{font-size:35px;font-weight:950;letter-spacing:-.045em}.seasonstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}.seasonstat{background:#0b0d10;border:1px solid #22252b;border-radius:14px;padding:12px}.seasonstat small{display:block;color:var(--muted);font-size:8px;text-transform:uppercase;letter-spacing:.12em}.seasonstat strong{font-size:21px;display:block;margin-top:5px}.trophy{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #22252b;padding:11px 0;font-size:12px}.trophy:last-child{border-bottom:0}.badge{font-size:10px;color:var(--gold);border:1px solid rgba(243,199,95,.3);padding:5px 8px;border-radius:99px}.summarybox{background:#0b0d10;border:1px solid #22252b;border-radius:15px;padding:13px;font-size:13px;line-height:1.5;color:#c7c9ce}.compare{display:grid;grid-template-columns:1fr 1fr;gap:8px}.compare div{background:#0b0d10;border:1px solid #22252b;border-radius:14px;padding:11px}.compare small{display:block;color:var(--muted);font-size:8px;text-transform:uppercase}.compare b{font-size:16px}.retireHero{font-size:clamp(46px,13vw,88px);font-weight:950;line-height:.84;letter-spacing:-.075em;margin:14px 0}.log{display:grid;grid-template-columns:52px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid #202329;font-size:11px;color:#c4c7cd}.log small{color:var(--muted)}.save{text-align:center;color:#686c74;font-size:10px;margin-top:13px}.impactLine{font-weight:800;color:#d8ff3f;margin-bottom:10px}.matchReport{color:#d1d4d9;font-size:13px;line-height:1.55}.matchReport p{margin:8px 0}.matchReport b{color:#f5f5f1}.matchAnim{margin:12px 0;padding:14px 10px;text-align:center;border-radius:14px;font-weight:1000;font-size:28px;letter-spacing:.08em;animation:goalPop .9s ease both}.matchAnim.goal{background:rgba(216,255,63,.12);color:#d8ff3f;border:1px solid rgba(216,255,63,.35)}.matchAnim.miss{background:rgba(255,105,117,.08);color:#ff8a93;border:1px solid rgba(255,105,117,.25)}@keyframes goalPop{0%{transform:scale(.55);opacity:0}55%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}
+@media(max-width:520px){.app{padding:13px 12px 28px}.two,.choicegrid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.event{padding:16px}.story{font-size:17px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="brand">DESTIN / FOOTBALL</div><div class="topright"><span id="topSeason"></span></div></header>
+
+<section id="home" class="screen active">
+<div class="eyebrow">Simulation narrative</div>
+<div class="title">Une vie.<br>Une carrière.</div>
+<p class="lead">Une décision ne fait pas une carrière. Des centaines de petites décisions, de matches, de rencontres et d'imprévus, oui.</p>
+<div class="card"><div class="eyebrow">Nouvelle partie</div><button class="cta" onclick="startCreate()">Créer mon joueur</button><button class="cta secondary" id="continueBtn" style="display:none" onclick="continueCareer()">Reprendre ma carrière</button></div>
+<div class="save" id="homeSave"></div>
+</section>
+
+<section id="create" class="screen">
+<div class="stephead"><div class="eyebrow" id="setupKind"></div><div class="week" id="stepNum"></div></div>
+<div class="progress"><i id="createProgress"></i></div>
+<div id="createBody"></div>
+</section>
+
+<section id="career" class="screen">
+<div class="card" style="margin-top:0"><div class="profile"><div class="avatar" id="avatar"></div><div><div class="name" id="pName"></div><div class="sub" id="pSub"></div></div><div class="age" id="pAge"></div></div><div class="pillrow" id="summary" style="margin-top:12px"></div></div>
+<div class="stats"><div class="stat"><small>Vitesse</small><strong id="stSpeed"></strong></div><div class="stat"><small>Finition</small><strong id="stFinish"></strong></div><div class="stat"><small>Dribble</small><strong id="stDribble"></strong></div><div class="stat"><small>Passe</small><strong id="stPass"></strong></div><div class="stat"><small>Physique</small><strong id="stPhysical"></strong></div><div class="stat"><small>Défense</small><strong id="stDefense"></strong></div><div class="stat"><small>Forme</small><strong id="stForm"></strong></div></div>
+<div class="seasonline" id="seasonline"></div>
+<div id="offerSlot"></div>
+<div class="card event">
+<div class="eventtop"><div class="eventtype" id="eventType"></div><div class="week" id="week"></div></div>
+<div class="story" id="story"></div>
+<div class="choices" id="choices"></div>
+<div class="result" id="result"></div><div id="matchAnimation"></div>
+</div>
+<div class="news" id="news"><b id="newsTitle"></b><span id="newsText"></span></div>
+<div class="save">Sauvegarde automatique · 1 décision = 1 semaine · football prioritaire</div>
+</section>
+
+<section id="season" class="screen">
+<div class="eyebrow" id="seasonEyebrow"></div>
+<div class="seasonhero" id="seasonHero"></div>
+<p class="lead" id="seasonLead"></p>
+<div class="card">
+<div class="eyebrow">Statistiques personnelles</div>
+<div class="seasonstats" id="seasonStats"></div>
+<div class="sectiontitle">Palmarès</div>
+<div id="trophies"></div>
+<div class="sectiontitle">Progression</div>
+<div class="compare" id="progression"></div>
+<div class="sectiontitle">Ce que le monde retient</div>
+<div class="summarybox" id="seasonSummary"></div>
+<div id="seasonOffers"></div>
+</div>
+<button class="cta" onclick="nextSeason()">Commencer la saison suivante</button>
+</section>
+
+<section id="retired" class="screen">
+<div class="eyebrow">Fin de carrière</div>
+<div class="retireHero" id="retireHero"></div>
+<div class="lead" id="retireLead"></div>
+<div class="card" id="retireCard"></div>
+<button class="cta" onclick="newCareer()">Nouvelle carrière</button>
+</section>
+</div>
+
+<script>
+const KEY="destin_football_v10";
+let game=JSON.parse(localStorage.getItem(KEY)||"null");
+
+let setup={step:0,name:"",surname:"",nation:"France",position:"MIL",style:"Finisseur",environment:"Classe moyenne",potentialStars:3,academy:"",clubOffers:[]};
+
+const positionChoices=[
+  {id:"G",name:"Gardien",trait:"Dernier rempart",desc:"Réflexes, placement et sang-froid."},
+  {id:"DEF",name:"Défenseur",trait:"Sentinelle",desc:"Duels, anticipation et protection de la surface."},
+  {id:"MIL",name:"Milieu",trait:"Chef d’orchestre",desc:"Lecture du jeu, passes et maîtrise du rythme."},
+  {id:"ATT",name:"Attaquant",trait:"Renard des surfaces",desc:"Appels, finition et instinct devant le but."}
+];
+const styleChoices=[
+  {id:"Finisseur",name:"Finisseur",trait:"Instinct du but",desc:"Tu cherches d’abord la dernière touche."},
+  {id:"Dribbleur",name:"Dribbleur",trait:"Provocateur",desc:"Tu aimes provoquer et éliminer ton adversaire."},
+  {id:"Créateur",name:"Créateur",trait:"Visionnaire",desc:"Tu vois les solutions avant les autres."},
+  {id:"Box-to-box",name:"Box-to-box",trait:"Moteur",desc:"Tu répètes les efforts et occupes tout le terrain."}
+];
+const environmentChoices=[
+  {id:"Quartier défavorisé",trait:"Joueur de rue",desc:"Tu as appris à jouer dans des espaces serrés et à improviser. Bonus naturel en dribble."},
+  {id:"Famille modeste",trait:"Battant",desc:"Chaque occasion compte. Tu développes résistance et mental."},
+  {id:"Classe moyenne",trait:"Équilibré",desc:"Un cadre stable qui permet de travailler régulièrement tous les aspects."},
+  {id:"Milieu favorisé",trait:"Formation structurée",desc:"Accès plus facile à l’encadrement et au travail technique."}
+];
+
+const setupSteps=[
+{kind:"Identité",title:"D'abord, toi.",body:`<p class="lead">Avant le football, il y a une personne. Son nom et son pays.</p><div class="grid two"><div><div class="label">Prénom</div><input class="field" id="name" maxlength="18" placeholder="Ex. Yanis"></div><div><div class="label">Nom</div><input class="field" id="surname" maxlength="20" placeholder="Ex. Martin"></div></div><div style="margin-top:11px"><div class="label">Nationalité</div><select class="field" id="nation">${["France","Espagne","Portugal","Brésil","Argentine","Maroc","Sénégal","Angleterre","Belgique","Italie","Allemagne"].map(x=>`<option>${x}</option>`).join("")}</select></div><button class="cta" onclick="nextSetup()">Continuer</button>`},
+{kind:"Poste",title:"Ton poste.",body:`<p class="lead">Quatre rôles. Quatre façons de construire ta carrière.</p><div class="choicegrid">${setupCards("position",positionChoices)}</div><button class="cta" onclick="nextSetup()">Continuer</button>`},
+{kind:"Style",title:"Ta manière de jouer.",body:`<p class="lead">Ton style crée une spécialité qui influencera tes qualités de départ et les situations que tu rencontreras.</p><div class="choicegrid">${setupCards("style",styleChoices)}</div><button class="cta" onclick="nextSetup()">Continuer</button>`},
+{kind:"Environnement",title:"Là où tu as grandi.",body:`<p class="lead">Ton environnement ne définit pas ton destin. Mais il laisse une trace dans ton football.</p><div class="choicegrid">${setupCards("environment",environmentChoices)}</div><button class="cta" onclick="nextSetup()">Continuer</button>`},
+{kind:"Potentiel",title:"Combien d'étoiles ?",body:`<p class="lead">Ton potentiel est calculé à partir de tes qualités. Il peut évoluer avec ta progression.</p><div class="card" style="text-align:center;background:#0a0c0f"><div class="eyebrow">Potentiel détecté</div><div id="potentialReveal" style="font-size:46px;letter-spacing:8px;margin:12px 0;color:var(--gold)"></div><div id="potentialText" class="lead" style="font-size:14px"></div></div><button class="cta" onclick="nextSetup()">Voir mes propositions</button>`},
+{kind:"Départ",title:"Les premières portes.",body:`<p class="lead">Ton potentiel ouvre certaines portes. Chaque club possède ses exigences et son niveau de concurrence.</p><div id="clubOffers" class="grid" style="gap:10px"></div><div class="card" style="background:#0a0c0f"><div class="eyebrow">Profil</div><div class="pillrow" id="setupSummary" style="margin-top:10px"></div></div><button class="cta" onclick="beginCareer()">Entrer dans la carrière</button>`}
+];
+
+function setupCards(key,arr){return arr.map(x=>`<button type="button" class="choice ${setup[key]===x.id?"selected":""}" data-key="${key}" data-val="${x.id}" onclick="pick(this)"><b>${x.name}</b><span><strong style="color:#d8ff3f">${x.trait}</strong></span><span>${x.desc}</span></button>`).join("")}
+
+const clubs=[
+["Toulouse FC",1,"France","Formation locale : le temps de jeu et la progression comptent plus que le prestige.",1,5],
+["FC Nantes",1,"France","Tu dois accepter un parcours patient et gagner ta place progressivement.",1,3],
+["RC Strasbourg",1,"France","Le club veut des joueurs capables de supporter une vraie concurrence.",1,3],
+["Lille OSC",2,"France","Le club veut révéler les jeunes : tu dois montrer une progression visible.",2,4],
+["Stade Rennais",2,"France","Le club privilégie les profils travailleurs et la régularité.",2,4],
+["Olympique Lyonnais",3,"France","La pression est forte : une mauvaise période peut vite te faire reculer.",3,5],
+["Real Sociedad",3,"Espagne","Technique et intelligence de jeu sont fortement attendues.",3,5],
+["Olympique de Marseille",3,"France","Le public veut des personnalités capables d'assumer la pression.",3,5],
+["AS Monaco",4,"France","Le niveau est élevé : tu dois accepter de concurrencer des joueurs déjà très cotés.",4,5],
+["RB Leipzig",4,"Allemagne","Intensité et discipline : le club attend une adaptation rapide.",4,5],
+["Benfica",4,"Portugal","Le club veut des jeunes prêts à apprendre puis à être exposés au haut niveau.",4,5],
+["Sporting CP",4,"Portugal","Tu dois progresser techniquement et accepter une forte concurrence interne.",4,5],
+["Paris Saint-Germain",5,"France","Prestige maximal, mais à 15 ans le temps de jeu est difficile à gagner.",5,5],
+["Borussia Dortmund",5,"Allemagne","Le club mise sur les jeunes, mais attend une adaptation totale au haut niveau.",5,5],
+["Bayer Leverkusen",5,"Allemagne","Tu dois être capable de comprendre rapidement un système exigeant.",5,5],
+["Atlético Madrid",5,"Espagne","Mental et discipline défensive sont non négociables.",5,5],
+["FC Barcelona",5,"Espagne","Le niveau technique demandé est exceptionnel et la concurrence est permanente.",5,5],
+["Inter Milan",5,"Italie","Tactique et maturité : tu dois apprendre vite sans brûler les étapes.",5,5],
+["AC Milan",5,"Italie","Le club valorise le talent, mais l'exigence historique est immense.",5,5],
+["Arsenal",5,"Angleterre","Le rythme est élevé et le club attend une adaptation physique rapide.",5,5],
+["Liverpool",5,"Angleterre","Intensité, discipline et mental sont indispensables.",5,5],
+["Manchester City",5,"Angleterre","Tu dois accepter une concurrence exceptionnelle pour chaque minute.",5,5],
+["Chelsea",5,"Angleterre","L'effectif est dense : tu devras te faire remarquer sans brûler les étapes.",5,5],
+].map(x=>({name:x[0],lvl:x[1],country:x[2],constraint:x[3],min:x[4],max:x[5]}));
+
+const eventPools={
+MATCH:[], TRAINING:[], LIFE:[
+["Ton meilleur ami t'envoie un message : « On sort ce soir. Ça fait des semaines qu'on ne t'a pas vu. »","Sortir avec eux","Tu accordes une soirée à tes proches.",{mental:4,form:-2}],
+["Ta famille traverse une période compliquée. Personne ne te demande d'argent, mais tu sens que quelque chose a changé.","Être présent","Tu mets le football de côté quelques heures.",{mental:5,form:-2}],
+["Une vidéo de toi devient virale après un match. Des centaines de messages arrivent.","Répondre aux supporters","Tu découvres l’envers de la visibilité.",{rep:4,mental:-1}],
+["Une marque locale veut utiliser ton image. L'argent est intéressant pour ton âge.","Accepter","Ton premier petit contrat commercial arrive.",{money:2,rep:2}],
+["Un journaliste te pose une question provocatrice après le match.","Répondre franchement","Ta réponse fait parler.",{rep:3,mental:-2}],
+["Tu sens que tes amis changent depuis que tu joues. Certains ne te parlent plus de la même manière.","Mettre des limites","Tu protèges ton équilibre.",{mental:4}],
+["Tu as enfin quelques jours libres. Ton corps réclame du repos, mais tu pourrais partir avec des amis.","Partir en vacances","Tu reviens avec la tête plus légère.",{mental:5,form:4,money:-1}]
+],
+AGENT:[
+["Ton agent t'appelle. « Je commence à recevoir des appels. Mais je ne veux rien bouger avant de savoir ce que tu veux. »","Lui dire que tu veux jouer","Tu fais du temps de jeu ta priorité.",{mental:3,rep:1}],
+["Un équipementier veut t'offrir un contrat. Ton entourage te pousse à accepter immédiatement.","Lire chaque ligne","Tu apprends à ne pas signer dans la précipitation.",{money:3,mental:2}],
+["Ton contrat arrive bientôt à son terme. Plusieurs clubs observent ta situation.","Attendre","Tu veux voir comment la saison se termine.",{mental:2,rep:2}],
+["Un ancien joueur te contacte et te propose de parler de ton avenir.","Accepter le rendez-vous","Tu écoutes une expérience de haut niveau.",{mental:5}],
+["Ton agent te présente une offre financière énorme, mais le club ne garantit pas ton temps de jeu.","Privilégier le projet sportif","Tu refuses de choisir uniquement avec l’argent.",{mental:4,rep:2}],
+["Ton entourage pense que tu devrais changer d’agent.","Garder celui qui t'accompagne","Tu privilégies la continuité.",{mental:3}]
+],
+SELECTION:[
+["La liste de ta sélection nationale tombe. Ton nom peut y être, mais rien n’est automatique.","Répondre présent","Tu assumes la pression de la convocation.",{mental:4,rep:4,selection:1}],
+["Tu es convoqué pour un rassemblement. Le niveau est plus élevé que prévu et chaque séance compte.","Gagner ta place","Tu veux montrer que tu mérites d’être là.",{pass:2,mental:4,rep:4,selection:1}],
+["Le sélectionneur hésite à te faire débuter. Tu as une semaine pour lui montrer que tu peux franchir ce cap.","Travailler sans réclamer","Tu laisses ton football parler.",{finish:2,mental:5,rep:3,selection:1}]
+],
+INJURY:[
+["À l'entraînement, une douleur inhabituelle apparaît. Le staff te conseille des examens.","Faire les examens","Tu acceptes de comprendre précisément ce qui se passe.",{form:8,mental:4,injury:2}],
+["Tu sens une gêne avant le match. Tu pourrais jouer avec un strap.","Ne pas prendre de risque","Tu demandes à être remplacé.",{form:5,mental:3}],
+["Après un contact, tu tombes mal. Le médecin veut t'examiner immédiatement.","Sortir du terrain","Tu acceptes la décision médicale.",{form:3,mental:2,injury:4}],
+["Tu reviens d’une blessure. Le coach veut te faire entrer progressivement.","Accepter le plan","Tu reconstruis ta forme étape par étape.",{form:8,mental:4}]
+],
+TRANSFER:[
+["Une offre arrive. Le club est plus grand, mais tu risques d’être remplaçant.","Accepter le défi","Tu choisis la concurrence.",{rep:5,mental:-2,transfer:1}],
+["Un club moins prestigieux te promet une place de titulaire.","Privilégier le temps de jeu","Tu veux jouer chaque semaine.",{rep:3,mental:4,transfer:1}],
+["Ton club veut te prolonger. Tu pourrais rester dans un environnement que tu connais.","Prolonger","Tu construis sur la stabilité.",{mental:5,rep:2,money:3,renew:1}]
+]
+};
+
+const matchScenes=[
+{id:"wing-1v1",when:g=>["Ailier","Attaquant"].includes(g.position),text:"Tu reçois le ballon près de la ligne. Le latéral est isolé et ton équipe peut accélérer.",choices:[["Provoquer en un contre un","Tu attaques directement ton défenseur.",{action:"dribble",dribble:3,speed:1,form:-2}],["Feinter puis rentrer","Tu changes de direction pour ouvrir ton pied fort.",{action:"cut",dribble:2,finish:1,form:-1}],["Fixer puis servir","Tu gardes le ballon avant de chercher un partenaire.",{action:"assist",pass:2,dribble:1,form:1}]]},
+{id:"wing-cross",when:g=>["Ailier","Attaquant"].includes(g.position),text:"Tu débordes côté gauche. Ton avant-centre attaque le premier poteau et un milieu arrive en retrait.",choices:[["Centre fort au premier poteau","Tu cherches la zone la plus dangereuse.",{action:"cross",pass:2,finish:1,form:-1}],["Centre en retrait","Tu lèves la tête et attends l'arrivée du milieu.",{action:"assist",pass:3,mental:1}],["Revenir et frapper","Tu rentres dans la surface pour tenter ta chance.",{action:"shot",dribble:1,finish:2,form:-2}]]},
+{id:"wing-space",when:g=>["Ailier","Attaquant"].includes(g.position),text:"Le latéral te colle. Derrière lui, un espace vient de s'ouvrir dans son dos.",choices:[["Partir immédiatement","Tu attaques l'espace avant que la défense ne se replace.",{action:"run",speed:3,physical:1,form:-1}],["Décrocher","Tu viens chercher le ballon pour attirer ton défenseur.",{action:"hold",pass:2,mental:2}],["Demander une passe lobée","Tu demandes à ton partenaire de sauter la ligne.",{action:"through",pass:2,speed:1}]]},
+{id:"one-v-one",when:g=>["Attaquant","Ailier","Milieu"].includes(g.position),text:"Tu es lancé face au dernier défenseur. Il recule et attend ton prochain mouvement.",choices:[["Crochet intérieur","Tu changes brutalement de direction.",{action:"dribble",dribble:3,speed:1,form:-2}],["Accélération extérieure","Tu comptes sur ta vitesse pour passer.",{action:"speed",speed:3,physical:1,form:-1}],["Fixer puis décaler","Tu attends le bon moment pour servir ton partenaire.",{action:"assist",pass:3,mental:2}]]},
+{id:"through-ball",when:g=>["Attaquant","Ailier","Milieu"].includes(g.position),text:"Ton milieu récupère le ballon. Tu vois ton partenaire partir dans le dos de la défense.",choices:[["Lancer en profondeur","Tu tentes la passe qui peut casser deux lignes.",{action:"through",pass:3,mental:1}],["Conserver le ballon","Tu temporises pour faire remonter le bloc.",{action:"hold",pass:1,form:1}],["Attaquer toi-même l'espace","Tu pars dans le dos de la défense.",{action:"run",speed:2,dribble:1,form:-1}]]},
+{id:"through-diagonal",when:g=>["Milieu","Attaquant","Ailier"].includes(g.position),text:"Le bloc adverse est compact dans l'axe. Ton ailier démarre une course diagonale entre latéral et central.",choices:[["Passe dans l'intervalle","Tu glisses le ballon au moment exact.",{action:"through",pass:3,mental:1}],["Renverser le jeu","Tu changes de côté pour déplacer le bloc.",{action:"switch",pass:3,form:1}],["Porter le ballon","Tu avances pour attirer un défenseur.",{action:"carry",dribble:2,speed:1,form:-1}]]},
+{id:"shoot-edge",when:g=>["Attaquant","Ailier","Milieu"].includes(g.position),text:"À l'entrée de la surface, le ballon revient dans ta course. Le défenseur recule et te laisse quelques mètres.",choices:[["Frapper sans contrôle","Tu déclenches immédiatement.",{action:"shot",finish:3,physical:1,form:-2}],["Contrôler puis frapper","Tu cherches ton meilleur pied.",{action:"controlledShot",finish:2,dribble:1}],["Décaler un partenaire","Tu renonces à la frappe pour créer une meilleure occasion.",{action:"assist",pass:3,mental:1}]]},
+{id:"box-rebound",when:g=>["Attaquant","Ailier","Milieu"].includes(g.position),text:"Le gardien repousse une frappe. Le ballon traîne à quelques mètres de toi dans une surface encombrée.",choices:[["Frapper immédiatement","Tu ne contrôles pas et attaques le rebond.",{action:"shot",finish:3,physical:1,form:-2}],["Contrôler avant de frapper","Tu veux éviter le geste précipité.",{action:"controlledShot",finish:2,mental:1}],["Remettre en retrait","Tu vois un partenaire mieux placé.",{action:"assist",pass:3,mental:2}]]},
+{id:"inside-run",when:g=>["Attaquant","Ailier","Milieu"].includes(g.position),text:"Ton partenaire fixe la défense. Tu peux couper dans son dos au moment où le central regarde le ballon.",choices:[["Couper au premier poteau","Tu attaques l'espace le plus court.",{action:"run",speed:2,finish:2,form:-1}],["Attendre au second","Tu retardes ton appel pour surprendre le défenseur.",{action:"run",speed:2,mental:2}],["Décrocher pour combiner","Tu viens jouer en remise.",{action:"assist",pass:2,mental:2}]]},
+{id:"back-to-goal",when:g=>g.position==="Attaquant",text:"Dos au but, tu reçois sous pression. Ton défenseur te pousse vers l'extérieur mais un milieu arrive lancé.",choices:[["Te retourner","Tu prends le risque de te mettre face au but.",{action:"turn",dribble:2,finish:2,physical:1,form:-2}],["Remise en une touche","Tu joues le troisième homme.",{action:"assist",pass:3,mental:2}],["Protéger et obtenir la faute","Tu utilises ton corps pour gagner du temps.",{action:"duel",physical:2,mental:1,form:-1}]]},
+{id:"penalty",when:g=>["Attaquant","Ailier","Milieu"].includes(g.position),text:"Penalty pour ton équipe. Le tireur habituel hésite et le capitaine te regarde.",choices:[["Demander à tirer","Tu assumes la responsabilité.",{action:"penalty",finish:3,mental:3,rep:2}],["Laisser le titulaire tirer","Tu respectes la hiérarchie.",{action:"support",mental:2,rep:1}],["Proposer une combinaison","Tu évoques une solution travaillée à l'entraînement.",{action:"setpiece",pass:2,mental:2}]]},
+{id:"free-kick",when:g=>["Milieu","Attaquant","Ailier","Défenseur"].includes(g.position)&&g.age>=16,text:"Coup franc à environ vingt mètres. Le tireur désigné te laisse choisir entre plusieurs solutions.",choices:[["Tenter la frappe","Tu prends ta chance directement.",{action:"shot",finish:2,mental:2,form:-1}],["Chercher la tête d'un partenaire","Tu déposes le ballon dans la zone dangereuse.",{action:"setpiece",pass:3,mental:1}],["Jouer court","Tu préfères construire plutôt que forcer.",{action:"simple",pass:2,form:1}]]},
+{id:"pressing",when:g=>true,text:"L'adversaire ressort court sous pression. Tu peux déclencher le pressing ou garder ta position.",choices:[["Presser immédiatement","Tu accélères pour fermer la première passe.",{action:"press",speed:2,physical:2,form:-2}],["Fermer la ligne de passe","Tu lis le jeu avant de courir.",{action:"intercept",defense:2,mental:2}],["Attendre le signal","Tu suis le plan collectif du coach.",{action:"structure",pass:1,defense:1,mental:2}]]},
+{id:"counter",when:g=>["Attaquant","Ailier","Milieu"].includes(g.position),text:"Ton équipe récupère haut. L'adversaire est déséquilibré et trois joueurs partent devant toi.",choices:[["Accélérer la transition","Tu joues immédiatement vers l'avant.",{action:"through",speed:2,pass:2,form:-2}],["Porter le ballon","Tu avances pour fixer le dernier milieu.",{action:"carry",dribble:2,speed:1,form:-1}],["Calmer puis renverser","Tu refuses de précipiter la dernière passe.",{action:"switch",pass:3,mental:2,form:1}]]},
+{id:"late-counter",when:g=>g.age>=16&&g.form>=45,text:"88e minute. Ton équipe mène d'un but et récupère un ballon de contre. Tu as encore les jambes pour attaquer.",choices:[["Partir à fond","Tu veux tuer le match.",{action:"run",speed:2,physical:2,form:-4}],["Garder le ballon","Tu fais remonter le bloc et fais tourner l'horloge.",{action:"hold",pass:2,mental:3,form:1}],["Chercher le partenaire","Tu attends le bon appel avant de jouer.",{action:"assist",pass:3,mental:2,form:-1}]]},
+{id:"equalizer",when:g=>g.age>=16,text:"78e minute. Ton équipe est menée 1-0. Le coach demande de prendre davantage de risques dans les vingt dernières minutes.",choices:[["Attaquer la surface","Tu te projettes dans la zone de vérité.",{action:"run",speed:2,finish:2,form:-2,rep:1}],["Frapper de loin","Tu profites du recul de la défense.",{action:"shot",finish:2,physical:1,form:-2,rep:1}],["Créer pour un partenaire","Tu cherches la dernière passe plutôt que l'exploit individuel.",{action:"assist",pass:3,mental:2,rep:1}]]},
+{id:"lead-control",when:g=>g.age>=16,text:"82e minute. Ton équipe mène 2-1. L'adversaire presse et chaque perte de balle devient dangereuse.",choices:[["Jouer simple","Tu sécurises chaque possession.",{action:"simple",pass:2,mental:2,form:1}],["Chercher le troisième but","Tu continues d'attaquer.",{action:"risk",finish:1,dribble:2,rep:2,form:-2}],["Provoquer une faute","Tu protèges le ballon et cherches le duel.",{action:"duel",dribble:1,physical:2,mental:1}]]},
+{id:"duel-def",when:g=>["Défenseur","Milieu"].includes(g.position),text:"L'attaquant adverse reçoit dos au but dans ta zone. Il cherche à se retourner.",choices:[["Intervenir immédiatement","Tu attaques le duel avant qu'il puisse se retourner.",{action:"tackle",defense:3,physical:2,form:-2}],["Contenir","Tu recules d'un pas et l'empêches de prendre de la vitesse.",{action:"contain",defense:2,physical:1,mental:2}],["Fermer la passe","Tu anticipes plutôt que d'aller au contact.",{action:"intercept",defense:2,pass:1,mental:2}]]},
+{id:"tackle-last",when:g=>g.position==="Défenseur",text:"Dernier défenseur. Une passe verticale met l'attaquant adverse face à toi avec quelques mètres d'avance.",choices:[["Tenter le tacle","Tu dois toucher le ballon sans faire faute.",{action:"tackle",defense:4,physical:2,form:-3}],["Reculer et temporiser","Tu attends le soutien d'un partenaire.",{action:"contain",defense:3,speed:1,mental:2}],["Couper la trajectoire","Tu lis la passe avant qu'elle n'arrive.",{action:"intercept",defense:3,speed:1,mental:2}]]},
+{id:"duel-wing-def",when:g=>g.position==="Défenseur",text:"L'ailier adverse prend de la vitesse près de ta surface. Tu dois défendre sans lui offrir l'intérieur.",choices:[["Fermer l'intérieur","Tu l'obliges à longer la ligne.",{action:"zone",defense:3,speed:1,mental:2}],["Attaquer le ballon","Tu cherches à récupérer immédiatement.",{action:"tackle",defense:3,physical:2,form:-2}],["Accompagner sans tacler","Tu attends son erreur de contrôle.",{action:"contain",defense:2,speed:2,form:1}]]},
+{id:"aerial",when:g=>["Défenseur","Gardien","Attaquant"].includes(g.position),text:"Un centre arrive dans la surface. Deux joueurs se disputent le ballon.",choices:[["Attaquer le ballon","Tu vas au duel sans hésiter.",{action:"aerial",physical:3,defense:2,form:-2}],["Sécuriser la zone","Tu te places pour récupérer le deuxième ballon.",{action:"zone",defense:2,mental:2}],["Dévier intelligemment","Tu cherches une déviation vers un partenaire.",{action:"aerial",pass:2,physical:1}]]},
+{id:"build-def",when:g=>["Défenseur","Gardien","Milieu"].includes(g.position),text:"Ton équipe récupère le ballon. Le premier rideau adverse est désorganisé et tu as une solution vers l'avant.",choices:[["Passe verticale","Tu cherches immédiatement à casser une ligne.",{action:"through",pass:3,mental:1}],["Changer d'aile","Tu renverses pour déplacer le bloc.",{action:"switch",pass:3,form:1}],["Conserver","Tu refuses de prendre un risque inutile.",{action:"control",pass:2,mental:2,form:1}]]},
+{id:"keeper-one-on-one",when:g=>g.position==="Gardien",text:"L'attaquant arrive lancé dans la surface après une passe en profondeur. Tu es seul face à lui.",choices:[["Sortir vite","Tu réduis l'angle avant sa frappe.",{action:"rush",speed:2,physical:2,form:-2}],["Rester debout","Tu attends le dernier instant.",{action:"focus",defense:3,mental:3}],["Plonger tôt","Tu anticipes son choix.",{action:"save",speed:2,defense:3,form:-1}]]},
+{id:"keeper-cross",when:g=>g.position==="Gardien",text:"Centre tendu vers le second poteau. Tes défenseurs sont pris entre deux adversaires.",choices:[["Sortir dans les airs","Tu attaques le ballon avec les deux mains.",{action:"aerial",physical:3,defense:3,form:-2}],["Rester sur ta ligne","Tu te prépares à une tête à bout portant.",{action:"focus",defense:3,mental:2}],["Appeler un défenseur","Tu organises ta ligne avant le centre.",{action:"structure",defense:2,mental:3}]]},
+{id:"keeper-distribution",when:g=>g.position==="Gardien",text:"Tu récupères le ballon dans tes mains. L'adversaire remonte haut et un partenaire démarre dans l'espace.",choices:[["Relance rapide à la main","Tu lances la transition avant que le bloc ne se replace.",{action:"through",pass:3,mental:1}],["Dégagement long","Tu sautes la première ligne de pression.",{action:"long",pass:2,physical:1}],["Attendre et jouer court","Tu gardes le contrôle du rythme.",{action:"control",pass:2,mental:2,form:1}]]},
+{id:"second-ball",when:g=>["Milieu","Défenseur","Attaquant"].includes(g.position),text:"Un duel vient d'être gagné par ton équipe mais le ballon retombe à vingt mètres. Tu peux attaquer le deuxième ballon.",choices:[["Te jeter dessus","Tu veux récupérer avant l'adversaire.",{action:"second",physical:2,defense:2,form:-2}],["Contrôler puis jouer","Tu sécurises la possession.",{action:"control",pass:2,mental:2}],["Frapper de première","Tu vois le gardien légèrement avancé.",{action:"shot",finish:2,physical:1,form:-2}]]},
+{id:"recovery",when:g=>g.position!=="Gardien",text:"Tu viens de perdre le ballon. Ton équipe peut encore le récupérer immédiatement si tu réagis vite.",choices:[["Contre-presser","Tu attaques le porteur dans les secondes qui suivent.",{action:"press",physical:2,speed:2,form:-3}],["Revenir en position","Tu protèges l'équilibre de l'équipe.",{action:"structure",defense:2,mental:2,form:1}],["Fermer la passe courte","Tu anticipes la solution la plus proche.",{action:"intercept",defense:2,speed:1,mental:2}]]},
+{id:"rivalry",when:g=>g.age>=16,text:"Le match est tendu. Un adversaire te provoque après un duel perdu.",choices:[["Répondre par le jeu","Tu gardes ta concentration et cherches le duel suivant.",{action:"focus",dribble:1,mental:3,rep:1}],["Répondre physiquement","Tu ne veux pas te laisser marcher dessus.",{action:"duel",physical:3,mental:-1,form:-1}],["T'éloigner","Tu refuses de perdre ton énergie.",{action:"calm",mental:3,form:1}]]},
+{id:"captain-pressure",when:g=>g.age>=18&&g.rep>=25,text:"Le capitaine te demande de prendre davantage de responsabilités dans un match fermé. L'équipe attend une initiative.",choices:[["Prendre le ballon","Tu réclames la responsabilité de créer.",{action:"risk",pass:2,mental:3,rep:2,form:-1}],["Respecter le plan","Tu restes fidèle aux consignes.",{action:"structure",pass:2,mental:2,form:1}],["Encourager les autres","Tu fais monter le niveau collectif.",{action:"focus",mental:4,rep:1}]]},
+{id:"big-stage",when:g=>g.age>=18&&g.clubLevel()>=4,text:"Grand match européen. Le stade est plein et chaque contrôle est accompagné d'une réaction du public.",choices:[["Jouer sans calculer","Tu assumes ton jeu habituel malgré la pression.",{action:"risk",dribble:2,finish:1,mental:2,form:-2,rep:3}],["Simplifier les premières minutes","Tu cherches d'abord à entrer dans ton match.",{action:"simple",pass:2,mental:3,form:1}],["Chercher le geste fort","Tu veux marquer les esprits rapidement.",{action:"shot",finish:2,dribble:2,rep:3,form:-3}]]},
+{id:"late-game",when:g=>true,text:"Dernier quart d'heure. Le score est serré et l'adversaire commence à laisser des espaces.",choices:[["Jouer vers l'avant","Tu accélères le rythme pour faire la différence.",{action:"risk",speed:2,dribble:2,form:-2}],["Garder le contrôle","Tu évites de donner des transitions faciles.",{action:"control",pass:2,mental:2}],["Chercher la faute","Tu protèges le ballon et provoques le duel.",{action:"duel",dribble:1,physical:2,rep:1}]]}
+,{id:"cutback",when:g=>["Ailier","Attaquant"].includes(g.position),text:"Tu arrives dans la surface après un débordement. Ton partenaire attend à l'entrée de la zone de vérité.",choices:[["Centre en retrait","Tu cherches le joueur lancé face au but.",{action:"assist",pass:3,mental:1}], ["Frapper au premier poteau","Tu profites du peu d'angle laissé par le gardien.",{action:"shot",finish:3,form:-2}], ["Conserver puis ressortir","Tu refuses de forcer une situation fermée.",{action:"control",pass:2,form:1}]]},
+{id:"through-pressure",when:g=>["Milieu","Attaquant","Ailier"].includes(g.position)&&g.overall>=45,text:"Tu reçois entre deux lignes. Un milieu adverse arrive dans ton dos et tu as une seconde pour choisir.",choices:[["Te retourner","Tu prends le risque de jouer face au but.",{action:"turn",dribble:2,pass:1,form:-2}], ["Remise en une touche","Tu fais jouer ton partenaire lancé.",{action:"assist",pass:3,mental:2}], ["Protéger le ballon","Tu attends le soutien et évites la perte dangereuse.",{action:"hold",physical:2,mental:2,form:1}]]},
+{id:"long-shot",when:g=>g.position!=="Gardien"&&g.overall>=50,text:"La défense recule et te laisse de l'espace à vingt-cinq mètres. Le gardien est légèrement avancé.",choices:[["Frapper de loin","Tu tentes une frappe avant que le bloc ne remonte.",{action:"shot",finish:3,physical:1,form:-2}], ["Faire une-deux","Tu cherches à entrer dans la surface.",{action:"assist",pass:2,dribble:1}], ["Porter puis décaler","Tu avances pour attirer le milieu adverse.",{action:"carry",dribble:2,pass:2,form:-1}]]},
+{id:"back-post",when:g=>["Attaquant","Ailier"].includes(g.position),text:"Un centre arrive au second poteau. Tu es libre mais l'angle est fermé.",choices:[["Reprendre de volée","Tu frappes avant que le ballon ne retombe.",{action:"shot",finish:3,physical:2,form:-3}], ["Contrôler de la poitrine","Tu sécurises avant de choisir.",{action:"controlledShot",finish:2,physical:1}], ["Remettre au centre","Tu cherches un partenaire mieux placé.",{action:"assist",pass:3,mental:1}]]},
+{id:"wall-pass",when:g=>["Milieu","Attaquant","Ailier"].includes(g.position),text:"Tu arrives face à un bloc bas. Ton partenaire est proche et le couloir central est fermé.",choices:[["Une-deux rapide","Tu joues en mouvement pour entrer dans la surface.",{action:"assist",pass:3,speed:1}], ["Éliminer sur place","Tu tentes de passer entre deux adversaires.",{action:"dribble",dribble:3,form:-2}], ["Renverser","Tu changes d'aile pour ouvrir le bloc.",{action:"switch",pass:3,mental:2}]]},
+{id:"press-trap",when:g=>g.overall>=50,text:"L'adversaire prépare une sortie courte mais tu vois un piège possible. Le coach te laisse décider du déclenchement.",choices:[["Déclencher le pressing","Tu prends le risque de jaillir à plusieurs.",{action:"press",speed:2,physical:2,form:-3}], ["Fermer l'axe","Tu forces l'adversaire à jouer sur un côté.",{action:"zone",defense:2,mental:3}], ["Rester compact","Tu refuses de casser la structure.",{action:"structure",defense:2,pass:1,form:1}]]},
+{id:"midfield-duel",when:g=>g.position==="Milieu",text:"Le ballon arrive dans une zone dense. Deux adversaires ferment les angles de passe.",choices:[["Conserver sous pression","Tu utilises ton corps pour protéger le ballon.",{action:"hold",physical:2,dribble:1,mental:2}], ["Passe verticale","Tu prends le risque de casser la ligne.",{action:"through",pass:3,mental:1,form:-1}], ["Éliminer le premier","Tu attaques l'espace entre les deux joueurs.",{action:"dribble",dribble:3,speed:1,form:-2}]]},
+{id:"midfield-switch",when:g=>g.position==="Milieu",text:"Le bloc adverse coulisse fortement d'un côté. L'aile opposée est presque vide.",choices:[["Renversement direct","Tu cherches à changer le jeu en une passe.",{action:"switch",pass:4,mental:2}], ["Conserver et attirer","Tu fais encore bouger le bloc avant de jouer.",{action:"hold",pass:2,mental:3,form:1}], ["Percer dans l'axe","Tu profites du déplacement adverse pour avancer.",{action:"carry",dribble:2,speed:1,form:-1}]]},
+{id:"defensive-clear",when:g=>g.position==="Défenseur",text:"Un ballon dangereux arrive dans ta surface. L'attaquant est juste derrière toi.",choices:[["Dégager en tribune","Tu privilégies la sécurité absolue.",{action:"clear",defense:3,physical:2,mental:1}], ["Contrôler puis relancer","Tu prends un risque technique sous pression.",{action:"control",pass:3,mental:2,form:-2}], ["Dévier vers le milieu","Tu cherches une sortie propre vers ton partenaire.",{action:"simple",defense:2,pass:2}]]},
+{id:"defensive-cover",when:g=>g.position==="Défenseur",text:"Ton latéral est battu. Tu dois choisir entre couvrir la profondeur ou sortir sur le porteur.",choices:[["Couvrir la profondeur","Tu protèges l'espace derrière la ligne.",{action:"zone",defense:3,speed:2,mental:2}], ["Sortir sur le porteur","Tu attaques immédiatement pour ralentir l'action.",{action:"tackle",defense:3,physical:2,form:-2}], ["Appeler le milieu","Tu demandes une couverture avant d'intervenir.",{action:"structure",defense:2,mental:3,pass:1}]]},
+{id:"keeper-corner",when:g=>g.position==="Gardien",text:"Corner adverse. Le ballon est joué au premier poteau et plusieurs joueurs se déplacent devant toi.",choices:[["Sortir au premier poteau","Tu attaques la trajectoire avant tout le monde.",{action:"aerial",physical:3,defense:3,form:-2}], ["Rester sur ta ligne","Tu privilégies la réaction à bout portant.",{action:"focus",defense:3,mental:2}], ["Organiser le marquage","Tu donnes une dernière consigne à tes défenseurs.",{action:"structure",defense:2,mental:3}]]},
+{id:"keeper-save",when:g=>g.position==="Gardien",text:"Frappe à ras de terre depuis l'entrée de la surface. Tu vois le ballon tardivement à cause d'un écran.",choices:[["Plonger immédiatement","Tu anticipes la trajectoire.",{action:"save",speed:2,defense:3,form:-2}], ["Rester debout puis fermer l'angle","Tu attends une fraction de seconde.",{action:"focus",defense:3,mental:3}], ["Dévier du pied","Tu privilégies une parade réflexe avec la jambe.",{action:"save",physical:2,defense:2,form:-1}]]},
+{id:"youth-debut",when:g=>g.age<=16,text:"Le coach t'appelle pour une fin de match. Tu n'as que quelques minutes pour montrer que tu peux exister à ce niveau.",choices:[["Jouer sans te cacher","Tu demandes immédiatement le ballon.",{action:"risk",dribble:2,mental:2,form:-1}], ["Respecter le plan","Tu suis les consignes et cherches la simplicité.",{action:"simple",pass:2,mental:3,form:1}], ["Attaquer la profondeur","Tu fais des appels pour étirer la défense.",{action:"run",speed:2,finish:1,form:-1}]]},
+{id:"reserve-breakthrough",when:g=>g.age>=17&&g.age<=19&&g.overall>=50,text:"Tu joues avec la réserve depuis plusieurs semaines. Le staff du groupe professionnel est en tribune aujourd'hui.",choices:[["Jouer comme d'habitude","Tu ne changes rien malgré l'enjeu.",{action:"focus",mental:3,dribble:1,rep:2}], ["Chercher à impressionner","Tu prends davantage de risques individuels.",{action:"risk",dribble:2,finish:1,rep:3,form:-2}], ["Faire jouer l'équipe","Tu privilégies les bonnes décisions plutôt que les statistiques.",{action:"assist",pass:3,mental:2,rep:2}]]},
+{id:"pro-debut",when:g=>g.age>=17&&g.overall>=58,text:"Première titularisation avec les professionnels. Tu entends ton nom dans les tribunes avant le coup d'envoi.",choices:[["Jouer simple au début","Tu veux entrer progressivement dans le rythme.",{action:"simple",pass:2,mental:3,form:1}], ["Provoquer dès le premier ballon","Tu veux montrer que tu n'es pas impressionné.",{action:"dribble",dribble:2,speed:1,rep:3,form:-2}], ["Chercher l'appel décisif","Tu attaques immédiatement la profondeur.",{action:"run",speed:2,finish:1,mental:2,form:-1}]]},
+{id:"big-match-shot",when:g=>g.age>=18&&g.overall>=65,text:"Grand match. À la 70e minute, tu récupères un ballon à vingt mètres alors que ton équipe a besoin d'un but.",choices:[["Frapper en première intention","Tu déclenches avant que la défense ne sorte.",{action:"shot",finish:4,form:-3,rep:3}], ["Fixer puis décaler","Tu attends l'ouverture pour servir ton partenaire.",{action:"assist",pass:3,mental:2,rep:2}], ["Éliminer puis frapper","Tu prends le risque de créer ton propre angle.",{action:"dribble",dribble:3,finish:2,form:-3,rep:3}]]},
+{id:"fatigue-late",when:g=>g.form<=45&&g.age>=17,text:"70e minute. Tes jambes sont lourdes et le coach te demande si tu peux encore faire les efforts nécessaires.",choices:[["Continuer à tout donner","Tu refuses de sortir malgré la fatigue.",{action:"risk",physical:2,speed:1,form:-7,mental:2}], ["Gérer tes courses","Tu choisis les moments où tu accélères.",{action:"control",mental:3,form:-2,pass:1}], ["Demander à sortir","Tu préfères préserver ton corps.",{action:"rest",form:5,mental:1}]]},
+{id:"high-level-press",when:g=>g.age>=20&&g.overall>=72,text:"Face à une équipe de très haut niveau, tu récupères le ballon sous un pressing à trois joueurs.",choices:[["Sortir par le dribble","Tu attaques le premier espace disponible.",{action:"dribble",dribble:3,pass:1,form:-3}], ["Jeu en une touche","Tu combines rapidement pour sortir de la zone.",{action:"simple",pass:4,mental:3}], ["Longue diagonale","Tu sautes le pressing par une passe ambitieuse.",{action:"switch",pass:3,physical:1,form:-1}]]},
+{id:"veteran-manage",when:g=>g.age>=30,text:"Tu connais parfaitement ce genre de match. Le rythme est élevé mais tu sais que chaque course inutile se paiera plus tard.",choices:[["Gérer le tempo","Tu choisis précisément quand accélérer.",{action:"control",pass:2,mental:4,form:2}], ["Jouer comme à vingt ans","Tu acceptes de multiplier les efforts.",{action:"risk",speed:2,physical:2,form:-5,rep:1}], ["Devenir le point de repère","Tu demandes le ballon et aides les jeunes autour de toi.",{action:"focus",pass:2,mental:4,rep:2}]]}
+
+];
+
+const trainingScenes=[
+ {id:"finish",when:g=>["Attaquant","Ailier","Milieu offensif"].includes(g.position),text:"Le staff installe une série de frappes après contrôle à l’entrée de la surface.",choices:[
+  ["Enchaîner rapidement","Tu travailles le geste dans le rythme du match.",{finish:3,physical:1,form:-3}],
+  ["Soigner le placement","Tu privilégies la qualité de chaque frappe.",{finish:2,mental:2}],
+  ["Frapper des deux pieds","Tu cherches à devenir moins prévisible.",{finish:2,dribble:1,form:-1}]
+ ]},
+ {id:"dribble",when:g=>["Attaquant","Ailier","Milieu offensif","Milieu"].includes(g.position),text:"Le préparateur organise une série de duels dans un espace réduit.",choices:[
+  ["Multiplier les feintes","Tu travailles tes changements de direction.",{dribble:3,speed:1,form:-2}],
+  ["Protéger puis ressortir","Tu travailles le contrôle sous pression.",{dribble:2,physical:1,pass:1}],
+  ["Jouer en une touche","Tu privilégies la prise d’information.",{pass:3,mental:2}]
+ ]},
+ {id:"speed",when:g=>true,text:"Séance physique : départs courts, changements de direction et répétitions à haute intensité.",choices:[
+  ["Tout donner","Tu pousses chaque répétition au maximum.",{speed:3,physical:2,form:-6}],
+  ["Travailler la technique de course","Tu cherches à être plus efficace plutôt que simplement plus rapide.",{speed:2,physical:1,mental:2}],
+  ["Gérer l’effort","Tu gardes du jus pour la suite de la semaine.",{speed:1,form:6,mental:1}]
+ ]},
+ {id:"pass",when:g=>["Milieu","Milieu offensif","Défenseur","Gardien"].includes(g.position),text:"Le staff travaille les sorties de balle sous pression avec une opposition réduite.",choices:[
+  ["Jouer entre les lignes","Tu cherches les passes qui cassent le pressing.",{pass:3,mental:2,form:-2}],
+  ["Changer rapidement de côté","Tu travailles les renversements.",{pass:2,physical:1}],
+  ["Sécuriser les premières passes","Tu privilégies la propreté technique.",{pass:2,mental:3}]
+ ]},
+ {id:"physical",when:g=>true,text:"Le préparateur augmente la charge physique. La séance est conçue pour construire ta résistance sur la saison.",choices:[
+  ["Suivre toute la charge","Tu acceptes la difficulté.",{physical:3,form:-5,mental:2}],
+  ["Adapter les charges","Tu demandes un travail personnalisé.",{physical:2,form:-1,mental:3}],
+  ["Prioriser la récupération","Tu protèges ton corps pour les prochains matches.",{physical:1,form:6,mental:2}]
+ ]},
+ {id:"tactics",when:g=>g.age>=16,text:"Le coach arrête la séance pour corriger ton placement. Il te montre trois situations où tu arrives une seconde trop tard.",choices:[
+  ["Rejouer les situations","Tu répètes jusqu’à comprendre le déclenchement.",{defense:2,pass:2,mental:3}],
+  ["Observer les autres","Tu analyses comment les titulaires lisent ces mouvements.",{mental:4,pass:1}],
+  ["Demander un exercice individuel","Tu veux corriger ton défaut précisément.",{defense:2,physical:1,mental:3}]
+ ]},
+ {id:"weakness",when:g=>true,text:"Le staff te présente ton rapport individuel. Une caractéristique ressort comme ton principal axe de progression.",choices:[
+  ["Travailler ton point faible","Tu acceptes de sortir de ta zone de confort.",{action:"weak",mental:3}],
+  ["Perfectionner ton point fort","Tu cherches à devenir exceptionnel dans ce que tu fais déjà bien.",{action:"strong",mental:2}],
+  ["Demander un programme personnalisé","Tu veux un plan précis pour les prochaines semaines.",{action:"plan",mental:4,physical:1}]
+ ]},
+ {id:"video",when:g=>g.age>=17,text:"Analyse vidéo avec l’adjoint. Il te montre plusieurs séquences de ton dernier match et te demande de choisir ce que tu veux corriger.",choices:[
+  ["Tes déplacements","Tu veux mieux apparaître dans les bons espaces.",{speed:1,mental:3,pass:1}],
+  ["Tes décisions avec le ballon","Tu veux jouer plus juste sous pression.",{pass:2,dribble:1,mental:3}],
+  ["Tes duels","Tu veux gagner davantage de situations individuelles.",{physical:2,defense:2,mental:2}]
+ ]}
+];
+
+const specialEvents={
+15:["MATCH","Premier match important. Le recruteur est en tribune."],
+16:["TRAINING","Le niveau monte. Les places deviennent plus difficiles à gagner."],
+17:["AGENT","Ton entourage commence à parler de football professionnel."],
+18:["AGENT","Ton premier contrat professionnel est désormais possible."],
+21:["TRANSFER","Ta réputation commence à dépasser les frontières de ton club."],
+24:["TRANSFER","Tu entres dans les années où les gros clubs prennent des décisions sur toi."],
+30:["LIFE","Tu es désormais un joueur confirmé. Les décisions hors terrain comptent autant."],
+35:["INJURY","Ton corps ne récupère plus comme à 22 ans."],
+39:["LIFE","Tu commences à penser sérieusement à l’après-carrière."]
+};
+
+function cards(key,arr){return setupCards(key,arr)}
+function desc(x){return "Ton choix façonne ta progression."}
+
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");scrollTo(0,0)}
+function startCreate(){setup={step:0,name:"",surname:"",nation:"France",position:"MIL",style:"Finisseur",environment:"Classe moyenne",potentialStars:3,academy:"",clubOffers:[]};show("create");renderSetup()}
+function potentialRoll(){const old=game;const temp={attrs:initialAttributes(),position:positionChoices.find(x=>x.id===setup.position)?.name||"Milieu"};game=temp;setup.potentialStars=calcPotential();game=old;}
+function renderPotential(){const stars=setup.potentialStars||3;document.getElementById("potentialReveal").textContent="★".repeat(stars)+"☆".repeat(5-stars);document.getElementById("potentialText").textContent=stars===1?"Profil à construire. Peu de portes ouvertes, mais rien n’est joué.":stars===2?"Potentiel intéressant. Des clubs formateurs commencent à te repérer.":stars===3?"Bon potentiel. Des clubs professionnels commencent à croire en toi.":stars===4?"Très gros potentiel. Les clubs ambitieux veulent te tester.":"Potentiel exceptionnel. Les plus grands clubs peuvent déjà venir à toi."}
+function renderClubOffers(){if(!setup.clubOffers||!setup.clubOffers.length){const eligible=clubs.filter(c=>c.min<=setup.potentialStars&&c.max>=setup.potentialStars);const preferred=eligible.filter(c=>c.lvl>=Math.max(1,setup.potentialStars-1));const source=preferred.length>=4?preferred:eligible;setup.clubOffers=source.sort(()=>Math.random()-.5).slice(0,Math.min(4,source.length))}document.getElementById("clubOffers").innerHTML=setup.clubOffers.map(c=>`<button type="button" class="choice ${setup.academy===c.name?"selected":""}" data-club="${c.name}" onclick="selectClubOffer(this.dataset.club)"><b>${c.name}</b><span>${"★".repeat(c.lvl)}${"☆".repeat(5-c.lvl)} · ${c.country}</span><span style="margin-top:8px;color:#c9ccd1">${c.constraint}</span></button>`).join("")}
+function selectClubOffer(name){setup.academy=name;document.querySelectorAll('#clubOffers .choice').forEach(b=>b.classList.toggle('selected',b.dataset.club===name));const selected=clubs.find(c=>c.name===name);if(selected){document.getElementById('setupSummary').innerHTML=profilePills(true,selected.name)}}
+function profilePills(includeClub=false,clubName=''){const pos=positionChoices.find(x=>x.id===setup.position),sty=styleChoices.find(x=>x.id===setup.style),env=environmentChoices.find(x=>x.id===setup.environment);return `<span class="pill">${setup.name} ${setup.surname}</span><span class="pill">${setup.nation}</span><span class="pill">${pos.name} · ${pos.trait}</span><span class="pill">${sty.name} · ${sty.trait}</span><span class="pill">${env.trait}</span><span class="pill">Potentiel ${'★'.repeat(setup.potentialStars||3)}</span>${includeClub?`<span class="pill">${clubName}</span>`:''}`}
+function renderSetup(){let s=setupSteps[setup.step];document.getElementById("setupKind").textContent=s.kind;document.getElementById("stepNum").textContent=`${setup.step+1} / ${setupSteps.length}`;document.getElementById("createProgress").style.width=((setup.step+1)/setupSteps.length*100)+"%";document.getElementById("createBody").innerHTML=`<div class="eyebrow">${s.kind}</div><div class="title" style="font-size:clamp(38px,9vw,58px)">${s.title}</div>${s.body}`;if(setup.step===0){document.getElementById("name").value=setup.name;document.getElementById("surname").value=setup.surname;document.getElementById("nation").value=setup.nation}if(setup.step===4)renderPotential();if(setup.step===5){renderClubOffers();document.getElementById("setupSummary").innerHTML=profilePills(false)}}
+function pick(el){setup[el.dataset.key]=el.dataset.val;el.parentElement.querySelectorAll(".choice").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")}
+function nextSetup(){if(setup.step===0){setup.name=document.getElementById("name").value.trim()||"Yanis";setup.surname=document.getElementById("surname").value.trim()||"Martin";setup.nation=document.getElementById("nation").value}if(setup.step===3)potentialRoll();if(setup.step===4&&!setup.potentialStars)potentialRoll();setup.step++;renderSetup()}
+function initialAttributes(){
+ const a={speed:40,finish:40,dribble:40,pass:40,physical:40,defense:40};
+ const pos={G:{defense:11,physical:5,pass:3},DEF:{defense:10,physical:8,speed:2},MIL:{pass:10,dribble:4,speed:2},ATT:{finish:10,speed:5,dribble:4}}[setup.position]||{};
+ const sty={Finisseur:{finish:7},Dribbleur:{dribble:7,speed:3},Créateur:{pass:7,dribble:2},"Box-to-box":{physical:6,speed:3,pass:3}}[setup.style]||{};
+ const env={"Quartier défavorisé":{dribble:6,speed:2},"Famille modeste":{physical:5,defense:2},"Classe moyenne":{pass:3,physical:2},"Milieu favorisé":{pass:4,finish:3}}[setup.environment]||{};
+ for(const src of [pos,sty,env])Object.entries(src).forEach(([k,v])=>a[k]+=v);
+ Object.keys(a).forEach(k=>a[k]=Math.max(25,Math.min(68,a[k]+Math.floor(Math.random()*9)-4)));
+ return a;
+}
+
+function overall(){const a=game.attrs||{};const weights=game.position==="Gardien"?{speed:.12,finish:.02,dribble:.08,pass:.18,physical:.2,defense:.4}:game.position==="Défenseur"?{speed:.16,finish:.02,dribble:.08,pass:.16,physical:.24,defense:.34}:game.position==="Attaquant"?{speed:.22,finish:.34,dribble:.22,pass:.1,physical:.12,defense:0}:{speed:.17,finish:.14,dribble:.2,pass:.24,physical:.13,defense:.12};let n=0;for(const k in weights)n+=(a[k]||0)*weights[k];return Math.round(n)}
+function calcPotential(){const o=overall();return Math.max(1,Math.min(5,Math.floor((o-25)/9)+1))}
+function refreshPotential(){game.potentialStars=calcPotential()}
+function beginCareer(){if(!setup.academy){alert("Choisis un club de départ.");return}const attrs=initialAttributes();let g={name:`${setup.name} ${setup.surname}`.trim(),nation:setup.nation,position:positionChoices.find(x=>x.id===setup.position)?.name||"Milieu",style:setup.style,environment:setup.environment,positionTrait:positionChoices.find(x=>x.id===setup.position)?.trait||"",styleTrait:styleChoices.find(x=>x.id===setup.style)?.trait||"",environmentTrait:environmentChoices.find(x=>x.id===setup.environment)?.trait||"",club:setup.academy,age:15,year:2026,week:1,attrs,mental:50,form:84,rep:0,money:0,goals:0,assists:0,matches:0,starts:0,seasonGoals:0,seasonAssists:0,seasonMatches:0,seasonStarts:0,seasonRating:0,seasonMan:0,seasonCards:0,selectionCaps:0,trophies:[],history:[],seed:Math.floor(Math.random()*2147483647),injuryWeeks:0,injuryName:"",currentEvent:null,currentIndex:0,pendingResult:null,offer:null,lastNews:null,adapt:0,recentMatchScenes:[],recentTrainingScenes:[],retired:false};game=g;refreshPotential();save();show("career");renderCareer()}
+
+function rng(){game.seed=(game.seed*1664525+1013904223)>>>0;return game.seed/4294967296}
+function seasonPhase(){let w=((game.week-1)%26)+1;return w<3?"Pré-saison":w<=13?"Première partie":"Deuxième partie"}
+function seasonLabel(){return `${game.year}/${String(game.year+1).slice(-2)}`}
+function clubLevel(){const c=clubs.find(x=>x.name===game.club);return c?c.lvl:1}
+function ageStage(){if(game.age<=16)return 'academy';if(game.age<=18)return 'transition';if(game.age<=22)return 'breakthrough';if(game.age<=29)return 'prime';if(game.age<=34)return 'veteran';return 'late'}
+function getFootballContext(){return {age:game.age,stage:ageStage(),overall:overall(),clubLevel:clubLevel(),position:game.position,rep:game.rep,form:game.form}}
+function eligibleScenes(list){const g=getFootballContext();return list.filter(s=>(!s.when||s.when(g))&&(!s.minAge||g.age>=s.minAge)&&(!s.maxAge||g.age<=s.maxAge)&&(!s.minOverall||g.overall>=s.minOverall)&&(!s.maxOverall||g.overall<=s.maxOverall)&&(!s.minForm||g.form>=s.minForm)&&(!s.clubLevelMin||g.clubLevel>=s.clubLevelMin))}
+function weakestAttribute(){const a=game.attrs||{};return Object.entries(a).sort((x,y)=>x[1]-y[1])[0][0]}
+function strongestAttribute(){const a=game.attrs||{};return Object.entries(a).sort((x,y)=>y[1]-x[1])[0][0]}
+function dynamicTrainingScene(){
+  let pool=eligibleScenes(trainingScenes); const recent=game.recentTrainingScenes||[]; const fresh=pool.filter(x=>!recent.includes(x.id)); if(fresh.length>=2)pool=fresh; let scene=pool[Math.floor(rng()*pool.length)]; game.recentTrainingScenes=[...recent,scene.id].slice(-6);
+  if(scene.id==='weakness'){
+    const weak=weakestAttribute(), strong=strongestAttribute();
+    const labels={speed:'vitesse',finish:'finition',dribble:'dribble',pass:'passe',physical:'physique',defense:'défense'};
+    scene={...scene,text:`Le staff te présente ton rapport individuel. Ta ${labels[weak]} (${game.attrs[weak]}/99) est actuellement ton principal axe de progression. Ta ${labels[strong]} est ton point fort.`,choices:[
+      ['Travailler ton point faible',`Tu consacres la séance à ta ${labels[weak]}.`,{action:'weak',target:weak,mental:3}],
+      ['Perfectionner ton point fort',`Tu cherches à rendre ta ${labels[strong]} encore plus dangereuse.`,{action:'strong',target:strong,mental:2}],
+      ['Demander un programme personnalisé','Le staff te prépare un travail adapté à ton profil.',{action:'plan',target:weak,mental:4,physical:1}]
+    ]};
+  }
+  return {type:'TRAINING',text:scene.text,choices:scene.choices,sceneId:scene.id};
+}
+function dynamicMatchScene(){let pool=eligibleScenes(matchScenes);const recent=game.recentMatchScenes||[];const fresh=pool.filter(x=>!recent.includes(x.id));if(fresh.length>=3)pool=fresh;const scene=pool[Math.floor(rng()*pool.length)];game.recentMatchScenes=[...recent,scene.id].slice(-8);return {type:'MATCH',text:scene.text,choices:scene.choices,sceneId:scene.id}}
+function getPool(){
+  const w=((game.week-1)%26)+1;
+  if(game.injuryWeeks>0)return [...eventPools.INJURY,...eventPools.TRAINING];
+  // À 15-16 ans : football de formation presque exclusivement. Aucun événement de mentorat artificiel.
+  let pool=[];
+  if(w>=2) pool.push({dynamic:'MATCH'},{dynamic:'MATCH'},{dynamic:'MATCH'},{dynamic:'MATCH'},{dynamic:'TRAINING'},{dynamic:'TRAINING'},{dynamic:'TRAINING'});
+  else pool.push({dynamic:'TRAINING'},{dynamic:'TRAINING'},{dynamic:'MATCH'});
+  if(game.age>=17&&game.rep>=10)pool.push(...eventPools.SELECTION.map(raw=>({raw,type:'SELECTION'})));
+  if(game.age>=17)pool.push(...eventPools.AGENT.map(raw=>({raw,type:'AGENT'})));
+  if(game.age>=18&&game.rep>=15)pool.push(...eventPools.TRANSFER.map(raw=>({raw,type:'TRANSFER'})));
+  // Vie/médias/proches : rares, et encore plus rares chez les jeunes.
+  const lifeChance=game.age<=16?.07:game.age<=18?.09:.12;
+  if(rng()<lifeChance)pool.push(...eventPools.LIFE.map(raw=>({raw,type:'LIFE'})));
+  return pool;
+}
+function genericChoices(type,raw){
+  const base=raw[3]||{};
+  if(type==="LIFE")return [[raw[1],raw[2],base],["Prioriser le football","Tu protèges ton rythme et tes objectifs.",{physical:1,form:3,mental:-1}],["Trouver un équilibre","Tu fais une place aux deux mondes.",{mental:4,form:1}]];
+  if(type==="AGENT")return [[raw[1],raw[2],base],["Prendre ton temps","Tu refuses de décider sous pression.",{mental:4,rep:1}],["Penser au projet sportif","Tu regardes d’abord le rôle qui t’attend.",{mental:3,rep:2}]];
+  if(type==="SELECTION")return [[raw[1],raw[2],base],["Gagner ta place","Tu demandes plus de responsabilités.",{finish:1,mental:4,rep:3,selection:1}],["Observer et apprendre","Tu profites du rassemblement pour progresser.",{pass:2,mental:5,selection:1}]];
+  if(type==="INJURY")return [[raw[1],raw[2],base],["Continuer malgré tout","Tu prends le risque de forcer.",{physical:1,form:-15,rep:2,injury:4}],["Changer ton hygiène de vie","Tu modifies ton quotidien pour mieux récupérer.",{physical:2,mental:5,form:10}]];
+  if(type==="TRANSFER")return [[raw[1],raw[2],base],["Demander des garanties","Tu veux connaître ton rôle avant de signer.",{mental:4,rep:2}],["Privilégier le projet sportif","Tu acceptes de penser au temps de jeu avant le prestige.",{pass:2,physical:1,mental:4,rep:2,transfer:1}]];
+  return [[raw[1],raw[2],base],["Réfléchir","Tu prends du recul.",{mental:3}],["Foncer","Tu assumes le risque.",{speed:1,rep:2,form:-3}]];
+}
+
+function makeEvent(){
+  const forced=specialEvents[game.age];
+  // Les événements d'âge ne remplacent pas un match à 15-16 ans : ils donnent seulement une couleur au chapitre.
+  if(forced&&((game.week-1)%26)===0&&game.age>=17){
+    const p=eventPools[forced[0]]||eventPools.LIFE;const raw=p[Math.floor(rng()*p.length)];
+    return {type:forced[0],text:forced[1],choices:genericChoices(forced[0],raw)};
+  }
+  const pool=getPool();const picked=pool[Math.floor(rng()*pool.length)];
+  if(picked.dynamic==='MATCH')return dynamicMatchScene();
+  if(picked.dynamic==='TRAINING')return dynamicTrainingScene();
+  const raw=picked.raw;return {type:picked.type,text:raw[0],choices:genericChoices(picked.type,raw)};
+}
+function ensureEvent(){if(!game.currentEvent){game.currentEvent=makeEvent();game.currentIndex=0}return game.currentEvent}
+function renderCareer(){refreshPotential();document.getElementById("topSeason").textContent=`${game.year} · ${seasonPhase()}`;document.getElementById("avatar").textContent=game.name.charAt(0).toUpperCase();document.getElementById("pName").textContent=game.name;document.getElementById("pSub").textContent=`${game.nation} · ${game.position} · ${game.club}`;document.getElementById("pAge").textContent=game.age;document.getElementById("summary").innerHTML=`<span class="pill">${seasonLabel()}</span><span class="pill">${game.club}</span><span class="pill">Potentiel ${"★".repeat(game.potentialStars)}</span><span class="pill">${game.seasonMatches} matchs</span><span class="pill">${game.seasonGoals} buts</span>`;document.getElementById("stSpeed").textContent=Math.round(game.attrs.speed);document.getElementById("stFinish").textContent=Math.round(game.attrs.finish);document.getElementById("stDribble").textContent=Math.round(game.attrs.dribble);document.getElementById("stPass").textContent=Math.round(game.attrs.pass);document.getElementById("stPhysical").textContent=Math.round(game.attrs.physical);document.getElementById("stDefense").textContent=Math.round(game.attrs.defense);document.getElementById("stForm").textContent=Math.round(game.form);document.getElementById("seasonline").innerHTML=[15,18,21,25,30,35,40].map(a=>`<i class="${game.age>=a?"on":""}"></i>`).join("");let e=ensureEvent();document.getElementById("eventType").textContent=e.type==="LIFE"?"ÉVÉNEMENT":e.type==="TRAINING"?"ENTRAÎNEMENT":e.type;document.getElementById("week").textContent=`Semaine ${((game.week-1)%26)+1} · ${game.year} · ${seasonPhase()}`;document.getElementById("story").textContent=e.text;const result=document.getElementById("result");if(game.pendingResult){document.getElementById("choices").innerHTML="";result.classList.add("show");result.innerHTML=`<b style="display:block;color:#f5f5f1;margin-bottom:7px">${game.pendingResult.title}</b><div>${game.pendingResult.text}</div><button class="cta" style="margin-top:13px" onclick="continueAfterResult()" type="button">Continuer →</button>`}else{document.getElementById("choices").innerHTML=e.choices.map((c,i)=>`<button class="action" onclick="choose(${i})"><b>${c[0]}</b><span>${c[1]}</span></button>`).join("");result.classList.remove("show");result.innerHTML=""}renderOffer();renderNews()}
+
+function randomImpact(value){if(!value)return 0;const magnitude=Math.max(1,Math.abs(value));const sign=rng()<.68?Math.sign(value):-Math.sign(value);return sign*(1+Math.floor(rng()*magnitude))}
+function applyChoice(ch){const impact=[];let targetKey=ch.target;if(ch.action==='weak'&&!targetKey)targetKey=weakestAttribute();if(ch.action==='strong'&&!targetKey)targetKey=strongestAttribute();if(ch.action==='plan'&&!targetKey)targetKey=weakestAttribute();for(const k of ["speed","finish","dribble","pass","physical","defense"]){let requested=ch[k];if(ch.action==='weak'&&k===targetKey)requested=3;if(ch.action==='strong'&&k===targetKey)requested=2;if(ch.action==='plan'&&k===targetKey)requested=4;if(requested){const delta=randomImpact(requested);game.attrs[k]=Math.max(1,Math.min(99,game.attrs[k]+delta));impact.push({k,delta,label:attrName(k)})}}
+for(const k of ["mental","form","rep","money"]){if(ch[k]){const delta=randomImpact(ch[k]);game[k]=Math.max(0,game[k]+delta);impact.push({k,delta,label:k==="mental"?"mental":k==="form"?"forme":k==="rep"?"réputation":"argent"})}}
+if(ch.injury){game.injuryWeeks=Math.max(game.injuryWeeks,ch.injury);game.injuryName=ch.injury>=4?"Blessure musculaire":"Gêne physique"}if(ch.adapt)game.adapt++;if(ch.selection)game.selectionCaps++;if(ch.transfer)game.offer={pending:true};if(ch.renew)game.offer={pending:true,renew:true};refreshPotential();return impact}
+function attrName(k){return {speed:"vitesse",finish:"finition",dribble:"dribble",pass:"passe",physical:"physique",defense:"défense"}[k]||k}
+
+function opponentForClub(){
+  const map={
+    "Olympique de Marseille":["Lyon","Lille","Monaco","Rennes","Nice","Nantes"],
+    "Toulouse FC":["Montpellier","Lille","Rennes","Nantes","Lyon","Brest"],
+    "Paris Saint-Germain":["Marseille","Lyon","Monaco","Lille","Lens","Rennes"],
+    "Olympique Lyonnais":["Marseille","Lille","Monaco","Rennes","Nice","Paris"],
+    "Lille OSC":["Lens","Marseille","Lyon","Monaco","Rennes","Paris"],
+    "AS Monaco":["Marseille","Lyon","Lille","Nice","Paris","Rennes"]
+  };
+  const arr=map[game.club]||["Lyon","Lille","Rennes","Monaco","Nice","Nantes"];
+  return arr[Math.floor(rng()*arr.length)];
+}
+function matchOutcome(choiceLabel,sceneId,choiceAction){
+  const a=game.attrs||{},o=overall();
+  const scene=sceneId||'generic';
+  const actionMap={dribble:'dribble',cut:'cut',simple:'simple',through:'through',hold:'control',run:'run',shot:'shot',controlledShot:'shot',assist:'assist',penalty:'penalty',support:'support',setpiece:'setpiece',press:'press',intercept:'intercept',structure:'structure',tackle:'tackle',contain:'contain',switch:'switch',aerial:'aerial',zone:'zone',second:'second',risk:'risk',control:'control',duel:'duel',focus:'focus',calm:'calm'};
+  const action=choiceAction||actionMap[choiceLabel]||'risk';
+  const risk=['dribble','shot','penalty','speed','through','tackle','aerial','risk','duel','turn','carry'].includes(action); const shotAction=['shot','controlledShot','penalty'].includes(action);
+  const quality=Math.max(0,Math.min(100,o*.48+game.mental*.12+game.form*.16+game.rep*.06+rng()*34));
+  const starter=rng()<Math.min(.94,.12+o/170+game.rep/260+game.form/210+(game.age>=18?.08:0));
+  const minutes=starter?Math.floor(65+rng()*27):Math.floor(10+rng()*42);
+  const opponent=opponentForClub();
+  let goals=0,assists=0,dribbles=0,shots=0,shotsOn=0,rating=5.5,moment='',actionText='',deciding=null;
+  const attacking=['Attaquant','Ailier','Milieu offensif'].includes(game.position);
+  const success=quality>=78, great=quality>=88, poor=quality<52;
+  if(attacking){
+    if(['dribble-wing','one-v-one'].includes(scene)){dribbles=Math.floor(rng()*2)+(a.dribble>=55?1:0);if(great)dribbles+=1;shots=Math.max(0,Math.floor(rng()*2)+(a.finish>=60?1:0));}
+    else {dribbles=Math.floor(rng()*2)+(a.dribble>=65?1:0);shots=Math.max(1,Math.floor(rng()*3)+(a.finish>=55?1:0));}
+    shotsOn=Math.min(shots,Math.floor(rng()*(shots+1)));
+    if(success){
+      if(scene==='penalty'){goals=rng()<(.50+a.finish/250)?1:0;shots=1;shotsOn=1;moment=`Tu prends quelques secondes, fixes le gardien et frappes avec conviction.`;actionText=goals?'Le ballon part à ras du poteau et termine au fond. BUT sur penalty.':'Le gardien part du bon côté et repousse ton penalty.'; deciding=goals?'goal':'miss';}
+      else if(['dribble-wing','one-v-one'].includes(scene)&&dribbles>=1){moment=`Tu attaques ton vis-à-vis. Ton premier crochet passe, puis tu changes de rythme pour prendre le deuxième défenseur de vitesse.`;if(great&&dribbles>=2)actionText=`Tu élimines ${dribbles} défenseurs et entres dans la surface.`;else actionText=`Tu crées un décalage qui ouvre une vraie situation de but.`;if(rng()<(.20+a.finish/260)){goals=1;shotsOn=Math.max(1,shotsOn);actionText+=` Quelques instants plus tard, tu frappes du ${rng()<.5?'gauche':'droit'} et trouves le petit filet. BUT.`; deciding='goal';}else if(rng()<.45){assists=1;actionText+=` Tu lèves la tête et offres une passe décisive à ton partenaire.`;} else if(shots>0){deciding='miss';actionText+=` Tu termines l'action par une frappe qui ne trouve pas le cadre.`;}}
+      else if(['through-ball','shoot-edge'].includes(scene)){moment=`Tu prends l'information avant de toucher le ballon et tu exécutes ton choix sans hésiter.`;if(scene==='shoot-edge'&&rng()<(.28+a.finish/260)){goals=1;shotsOn=Math.max(1,shotsOn);actionText=`Ta frappe part rapidement et finit dans le petit filet. BUT.`;}else if(scene==='through-ball'&&rng()<(.42+a.pass/230)){assists=1;actionText=`Ta passe dans le dos de la défense arrive exactement dans la course de ton partenaire. Passe décisive.`;}else { if(scene==='shoot-edge')deciding='miss'; actionText=`Ton action casse une ligne et permet à ton équipe de se procurer une grosse occasion.`;} }
+      else {moment=`Tu lis correctement la situation et ton choix donne du rythme à ton équipe.`;if(rng()<(shotAction?.24:.16)+a.finish/300){goals=1;deciding='goal';actionText=`À la ${Math.floor(68+rng()*20)}e minute, tu attaques le premier poteau et conclus en une touche. BUT.`;}else if(rng()<.28){assists=1;actionText=`Tu trouves ton partenaire dans une position idéale. Passe décisive.`;}else { if(shotAction)deciding='miss'; actionText=`Tu participes à plusieurs séquences dangereuses dans le dernier tiers.`; }}
+      rating=7.2+rng()*1.8;
+    }else if(poor){rating=4.8+rng()*1.0;moment=risk?`Tu veux faire la différence mais le geste ne sort pas comme prévu. Une perte de balle permet à l'adversaire de repartir.`:`Tu as du mal à te rendre disponible et ton influence reste limitée.`;actionText=shotsOn?`Une frappe est cadrée mais manque de puissance.`:`Tu termines avec peu de situations franches.`; if(shotAction)deciding='miss';}
+    else {rating=5.8+rng()*1.2;moment=`Tu alternes bonnes séquences et décisions moins propres dans les trente derniers mètres.`;actionText=shotsOn?`Tu cadres une tentative sans réellement inquiéter le gardien.`:`Tu touches beaucoup de ballons mais sans créer assez de danger.`;}
+  } else {
+    if(success){rating=7.0+rng()*1.5;moment=scene==='duel-def'?`Tu lis le duel avant l’attaquant et interviens au bon moment.`:`Tu prends de bonnes décisions sous pression et aides ton équipe à garder son équilibre.`;actionText=scene==='build-def'?`Ta première relance permet à ton équipe de sortir du pressing.`:scene==='aerial'?`Tu prends le dessus dans le duel aérien et éloignes le danger.`:`Ton intervention coupe une action qui pouvait devenir dangereuse.`;}else{rating=5.2+rng()*1.2;moment=`Tu connais quelques bonnes séquences mais tu arrives parfois une fraction trop tard.`;actionText=`Une erreur de placement laisse une petite occasion à l'adversaire.`;}
+  }
+  const teamGoals=Math.max(goals,Math.min(5,Math.floor(rng()*2)+(quality>=82?1:0)+(goals>0?1:0)));
+  const oppGoals=Math.max(0,Math.min(4,Math.floor(rng()*2)+(quality<45?1:0)));
+  game.form=Math.max(0,Math.min(100,game.form-(3+Math.floor(rng()*7))));game.matches++;game.seasonMatches++;game.starts+=starter?1:0;game.seasonStarts+=starter?1:0;
+  game.goals+=goals;game.seasonGoals+=goals;game.assists+=assists;game.seasonAssists+=assists;game.seasonRating+=rating;
+  const reputationDelta=rating>=7.7?2:rating<5.7?-1:1;game.rep=Math.max(0,Math.min(100,game.rep+reputationDelta));
+  if(rng()<.045){game.seasonCards++;game.lastNews={title:'DISCIPLINE',text:'Un carton vient s’ajouter à ta saison.'}}
+  return {starter,minutes,goals,assists,dribbles,shots,shotsOn,rating:Math.round(rating*10)/10,opponent,teamGoals,oppGoals,moment,action:actionText,reputationDelta,deciding};
+}
+function choose(i){
+  if(!game||game.pendingResult)return;
+  const e=ensureEvent();
+  const c=e.choices[i]||e.choices[0];
+  const ch=c[2]||{};
+  const impact=applyChoice(ch);
+  let match=null;
+  if(e.type==="MATCH")match=matchOutcome(c[0],e.sceneId,c[2]?.action);
+  game.history.push({year:game.year,age:game.age,week:((game.week-1)%26)+1,club:game.club,type:e.type,choice:c[0]});
+  const lines=impact.map(x=>`${x.delta>0?"+":""}${x.delta} ${x.label}`);
+  let text=lines.length?`<div class="impactLine">${lines.join(" · ")}</div>`:"";
+  if(match){
+    const role=match.starter?`Tu as débuté la rencontre et joué ${match.minutes} minutes.`:`Tu as commencé sur le banc avant d'entrer à la ${Math.max(46,90-match.minutes)}e minute pour ${match.minutes} minutes.`;
+    const stats=`${match.goals} but${match.goals>1?'s':''} · ${match.assists} passe${match.assists>1?'s':''} décisive${match.assists>1?'s':''} · ${match.dribbles} dribble${match.dribbles>1?'s':''} réussi${match.dribbles>1?'s':''} · ${match.shots} tir${match.shots>1?'s':''}`;
+    text+=`<div class="matchReport"><p><b>${game.club} ${match.teamGoals}-${match.oppGoals} ${match.opponent}</b></p><p>${role}</p><p>${match.moment}</p><p>${match.action}</p><p><b>Statistiques :</b> ${stats}. <b>Note : ${match.rating}/10.</b></p></div>`; if(match.deciding){ text+=`<div class="matchAnim ${match.deciding==='goal'?'goal':'miss'}">${match.deciding==='goal'?'⚽ BUT !':'RATÉ…'}</div>`; }
+  } else if(e.type==="TRAINING"){
+    const best=impact.filter(x=>["vitesse","finition","dribble","passe","physique","défense"].includes(x.label)).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta))[0];
+    text+=best?`<div class="matchReport"><p>La séance se termine. Le staff note surtout ton travail sur <b>${best.label}</b>. Selon la qualité de ta séance et ton état du jour, la progression est ${best.delta>0?"positive":"plus difficile que prévu"}.</p></div>`:`<div class="matchReport"><p>La séance est terminée. Le staff te laisse avec un axe de travail pour la prochaine semaine.</p></div>`;
+  } else {
+    text+=resultText(c[0],e.type);
+  }
+  game.pendingResult={title:e.type==="MATCH"?`MATCH TERMINÉ · « ${c[0]} »`:`Tu as choisi « ${c[0]} »`,text};
+  save();
+  renderCareer();
+}
+
+function resultText(choice,type){if(type==="INJURY")return`<div class="matchReport"><p>Le staff suivra l'évolution de ton état dans les prochaines semaines. Ta décision peut accélérer ton retour ou prolonger ta période d'adaptation.</p></div>`;return`<div class="matchReport"><p>Cette décision rejoint toutes les autres qui construisent ta carrière. Le résultat dépendra aussi de ta forme, de tes qualités et d’une part de hasard.</p></div>`}
+
+function continueAfterResult(){
+  if(!game||!game.pendingResult)return;
+  // Verrouille immédiatement le clic pour éviter deux semaines consommées par double-tap.
+  game.pendingResult=null;
+  game.currentEvent=null;
+  game.currentIndex=0;
+  if(game.injuryWeeks>0)game.injuryWeeks--;
+  game.form=Math.min(100,game.form+2);
+  game.week++;
+  save();
+  if((game.week-1)%26===13){renderMidSeason();return;}
+  if((game.week-1)%26===0){if(game.age>=40){retire();return;}finishSeason();return;}
+  renderCareer();
+}
+
+function renderMidSeason(){show("season");document.getElementById("topSeason").textContent=`${game.year} · Mi-saison`;document.getElementById("seasonEyebrow").textContent=`Pause · ${game.year}/${String(game.year+1).slice(-2)}`;document.getElementById("seasonHero").textContent=`Mi-saison · ${game.name}`;document.getElementById("seasonLead").textContent=`13 semaines sont passées. Tu peux souffler, regarder où tu en es et repartir pour la deuxième partie.`;document.getElementById("seasonStats").innerHTML=[["Matchs",game.seasonMatches],["Buts",game.seasonGoals],["Passes",game.seasonAssists],["Potentiel",game.potentialStars+"★"],["Note globale",overall()],["Réputation",Math.round(game.rep)]].map(x=>`<div class="seasonstat"><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join("");document.getElementById("trophies").innerHTML=`<div class="summarybox">Deuxième partie : nouvelles décisions, mercato, sélection, blessures et matches importants peuvent encore changer ta saison.</div>`;document.getElementById("progression").innerHTML="";document.getElementById("seasonSummary").textContent=`${13} semaines restantes. Rien n’est joué.`;document.querySelector('#season .cta').textContent="Reprendre la saison →";save()}
+function finishSeason(){calculateTrophies();let prev={potentialStars:game.potentialStars,mental:game.mental,form:game.form,rep:game.rep};game.form=Math.min(100,game.form+15);if(game.seasonMatches>10&&game.seasonGoals>4)game.rep=Math.min(100,game.rep+5);refreshPotential();refreshPotential();game.lastSeasonBefore=prev;game.lastSeason={matches:game.seasonMatches,starts:game.seasonStarts,goals:game.seasonGoals,assists:game.seasonAssists,rating:game.seasonMatches?Math.round((game.seasonRating/game.seasonMatches)*10)/10:0,man:game.seasonMan,cards:game.seasonCards,trophies:[...(game.seasonTrophies||[])]};game.seasonGoals=0;game.seasonAssists=0;game.seasonMatches=0;game.seasonStarts=0;game.seasonRating=0;game.seasonMan=0;game.seasonCards=0;game.seasonTrophies=[];game.year++;game.age++;game.week=1;game.currentEvent=null;game.offer=null;save();renderSeason()}
+
+function calculateTrophies(){game.seasonTrophies=[];let performance=game.seasonMatches?game.seasonRating/game.seasonMatches:0;if(performance>=6.9&&game.rep>=20)game.seasonTrophies.push("Équipe-type de la saison");if(game.seasonGoals>=12&&game.position!=="Gardien")game.seasonTrophies.push("Meilleur buteur du club");if(game.seasonMatches>=28&&game.rep>=35)game.seasonTrophies.push("Joueur de la saison");if(game.selectionCaps>=3&&game.rep>=30)game.seasonTrophies.push("Sélection nationale");if(game.seasonMatches>=25&&rng()<.18)game.seasonTrophies.push("Coupe nationale");if(game.rep>=60&&game.seasonMatches>=30&&rng()<.09)game.seasonTrophies.push("Championnat");if(game.rep>=75&&game.seasonMatches>=30&&rng()<.035)game.seasonTrophies.push("Compétition européenne")}
+function renderSeason(){show("season");let s=game.lastSeason;document.getElementById("topSeason").textContent=`${game.year-1}/${String(game.year).slice(-2)}`;document.getElementById("seasonEyebrow").textContent=`Bilan · ${game.year-1}/${String(game.year).slice(-2)}`;document.getElementById("seasonHero").textContent=`${game.name} · ${s.rating}/10`;document.getElementById("seasonLead").textContent=seasonNarrative(s);document.getElementById("seasonStats").innerHTML=[["Matchs",s.matches],["Titulaires",s.starts],["Buts",s.goals],["Passes",s.assists],["Note moyenne",s.rating],["Homme du match",s.man],["Cartons",s.cards],["Âge",game.age-1],["Club",game.club]].map(x=>`<div class="seasonstat"><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join("");document.getElementById("trophies").innerHTML=s.trophies.length?s.trophies.map(t=>`<div class="trophy"><span>${t}</span><span class="badge">REMPorté</span></div>`).join(""):`<div class="summarybox">Aucun trophée cette saison. Tout reste à construire.</div>`;let p=game.lastSeasonBefore;document.getElementById("progression").innerHTML=[["Potentiel",p.potentialStars,game.potentialStars],["Confiance",p.mental,game.mental],["Forme",p.form,game.form],["Cote",p.rep,game.rep]].map(x=>`<div><small>${x[0]}</small><b>${Math.round(x[1])} → ${Math.round(x[2])}</b></div>`).join("");let memories=[];if(s.goals>=10)memories.push(`${s.goals} buts cette saison.`);if(s.trophies.length)memories.push(`${s.trophies.length} distinction(s) remportée(s).`);if(s.man)memories.push(`${s.man} fois homme du match.`);if(!memories.length)memories.push("Une saison de construction. Les bases sont posées pour la suite.");document.getElementById("seasonSummary").textContent=memories.join(" ");save()}
+function seasonNarrative(s){if(s.trophies.includes("Joueur de la saison"))return"Une saison qui change ton statut. Ton nom commence à compter dans les discussions autour du championnat.";if(s.goals>=15)return"Tes performances offensives attirent désormais l’attention. Les prochaines décisions pourraient changer l'échelle de ta carrière.";if(s.matches<15)return"Une saison hachée. Tu n'as pas pu construire le rythme que tu espérais, mais rien n’est définitif.";return"Une saison solide. Pas de scénario écrit d'avance : tu continues d'avancer, semaine après semaine."}
+function nextSeason(){show("career");renderCareer()}
+function maybeTransferOffer(){if(game.offer&&game.offer.pending){let target=Math.max(1,Math.min(5,Math.floor(game.rep/18)+Math.floor(overall()/28)));let candidates=clubs.filter(c=>c.name!==game.club&&c.min<=target&&c.lvl<=Math.max(2,target+1));if(candidates.length){let c=candidates[Math.floor(rng()*candidates.length)];game.offer={club:c,renew:false}}else game.offer=null}}
+function renderOffer(){maybeTransferOffer();let slot=document.getElementById("offerSlot");if(!game.offer||!game.offer.club){slot.innerHTML="";return}let c=game.offer.club;slot.innerHTML=`<div class="offer"><div class="eyebrow">Mercato · Une porte s'ouvre</div><div class="club">${c.name}</div><div class="small">${c.country} · potentiel requis ${"★".repeat(c.min)} · ${c.constraint}</div><button onclick="acceptTransfer()">Ouvrir les discussions</button></div>`}
+function acceptTransfer(){if(!game.offer||!game.offer.club)return;let old=game.club,c=game.offer.club;game.club=c.name;game.offer=null;game.rep=Math.min(100,game.rep+5);game.mental=Math.max(0,game.mental-2);game.lastNews={title:"TRANSFERT",text:`Tu quittes ${old}. Désormais, tu portes les couleurs de ${c.name}. Une nouvelle vie commence.`};save();renderCareer()}
+function renderNews(){let n=game.lastNews,el=document.getElementById("news");if(!n){el.style.display="none";return}el.style.display="flex";document.getElementById("newsTitle").textContent=n.title;document.getElementById("newsText").textContent=n.text;game.lastNews=null}
+function save(){localStorage.setItem(KEY,JSON.stringify(game));if(game)document.getElementById("homeSave").textContent=`Carrière de ${game.name} · ${game.age} ans`}
+function continueCareer(){if(game&&!game.attrs){alert("Cette sauvegarde utilise une ancienne version. Crée une nouvelle carrière pour profiter du nouveau système de statistiques.");newCareer();return}if(game.retired){retire();return}show("career");renderCareer()}
+function newCareer(){localStorage.removeItem(KEY);game=null;startCreate()}
+function retire(){game.retired=true;save();show("retired");document.getElementById("topSeason").textContent="FIN";document.getElementById("retireHero").textContent=game.name;document.getElementById("retireLead").textContent=`${game.age} ans · ${game.nation} · ${game.position} · dernière équipe : ${game.club}`;document.getElementById("retireCard").innerHTML=`<div class="eyebrow">Une carrière, décision après décision</div><div class="seasonstats"><div class="seasonstat"><small>Matchs</small><strong>${game.matches}</strong></div><div class="seasonstat"><small>Buts</small><strong>${game.goals}</strong></div><div class="seasonstat"><small>Réputation</small><strong>${game.rep}</strong></div></div><div class="sectiontitle">Derniers chapitres</div>${game.history.slice(-8).reverse().map(x=>`<div class="log"><small>${x.year}</small><div><b>${x.club}</b><br>${x.choice}</div></div>`).join("")}`}
+
+/* ========================= V10 : progression de carrière réaliste ========================= */
+function clubStatus(){
+  if(game.status) return game.status;
+  if(game.age<=16) return game.age===15?'U16':'U17';
+  return 'Réserve';
+}
+function statusLabel(){
+  const s=clubStatus();
+  return s==='Pro'?'Professionnel':s==='Réserve'?'Équipe réserve':s;
+}
+function performanceIndex(){
+  const s=game.lastSeason||{};
+  const matches=s.matches||0, starts=s.starts||0, rating=s.rating||0;
+  const attacking=['Attaquant','Milieu'].includes(game.position);
+  const goals=s.goals||0, assists=s.assists||0;
+  let idx=overall()*0.45 + rating*5 + Math.min(10,starts)*0.8 + Math.min(10,matches)*0.25;
+  if(attacking) idx += goals*0.9 + assists*0.55;
+  else idx += goals*0.25 + assists*0.35;
+  idx += game.rep*0.08 + game.mental*0.04;
+  return idx;
+}
+function promotionThreshold(){
+  const s=game.lastSeason||{};
+  const rating=s.rating||0, matches=s.matches||0, starts=s.starts||0, o=overall();
+  return {o,rating,matches,starts};
+}
+function resolveDevelopment(){
+  const s=game.lastSeason||{};
+  const o=overall(), r=s.rating||0, m=s.matches||0, st=s.starts||0;
+  let result=null;
+  if(game.age===16){
+    if(o>=50 && r>=6.2 && m>=6) { game.status='Réserve'; result='promotionReserve'; }
+    else game.status='U17';
+  } else if(game.age===17 && game.status!=='Pro') {
+    const ready=o>=57 && r>=6.4 && m>=7;
+    const veryReady=o>=63 && r>=6.8 && m>=10;
+    if(ready||veryReady){
+      game.proOfferReady=true;
+      game.proOfferClub=game.club;
+      result='proOffer';
+    } else if(o>=48 && m>=6) {
+      game.status='Réserve';
+    }
+  } else if(game.age>=18 && game.status==='Réserve') {
+    if(o>=58 && r>=6.5 && m>=8){ game.proOfferReady=true; game.proOfferClub=game.club; result='proOffer'; }
+  }
+  return result;
+}
+function generateCareerOffers(){
+  game.pendingOffers=[];
+  if(game.age<17) return;
+  const s=game.lastSeason||{}, o=overall(), r=s.rating||0, m=s.matches||0;
+  const attacking=['Attaquant','Milieu'].includes(game.position);
+  const production=(attacking?(s.goals||0)*0.9+(s.assists||0)*0.45:((s.goals||0)*0.2+(s.assists||0)*0.3));
+  const score=o*0.7+r*5+m*.3+production+game.rep*.12;
+  if(score<60 || m<6) return;
+  const current=clubs.find(c=>c.name===game.club);
+  const maxLvl=Math.min(5, Math.max(1,(current?.lvl||1)+1));
+  const target=Math.min(5,Math.max(1,Math.floor((score-45)/18)+1));
+  let candidates=clubs.filter(c=>c.name!==game.club && c.lvl<=maxLvl && c.lvl<=target+1 && c.min<=game.potentialStars);
+  if(game.status!=='Pro') candidates=candidates.filter(c=>c.lvl<=Math.max(3,current?.lvl||1));
+  candidates=candidates.sort(()=>rng()-.5);
+  const count=score>=90?3:score>=75?2:1;
+  for(const c of candidates.slice(0,count)){
+    const role=game.status==='Pro'?'Contrat pro':(o>=58?'Projet pro / réserve':'Formation / réserve');
+    game.pendingOffers.push({club:c.name,level:c.lvl,role,reason:`Tes performances (${r||'—'}/10, ${m} matchs${attacking?`, ${s.goals||0} buts, ${s.assists||0} passes`:''}) ont attiré leur attention.`});
+  }
+}
+function careerMilestoneEvent(){
+  if(game.proOfferReady){
+    const external=game.pendingOffers||[];
+    const choices=[
+      ['Signer ton premier contrat pro',`Le ${game.club} te propose de passer officiellement professionnel. Tu connais déjà le club, le staff et l'environnement.`,{action:'signPro'}],
+      ['Écouter les autres clubs',external.length?`${external.length} club${external.length>1?'s':''} ${external.length>1?'se sont':'s’est'} manifesté${external.length>1?'s':''}. Tu veux connaître leur projet avant de décider.`:`Ton agent contacte plusieurs clubs pour savoir si une autre porte peut s’ouvrir.`,{action:'listenPro'}],
+      ['Demander encore du temps',`Tu n'es pas certain d'être prêt à signer immédiatement. Tu demandes à rester avec le groupe actuel et à gagner encore du temps de jeu.`,{action:'delayPro'}]
+    ];
+    return {type:'CARRIÈRE',text:`À ${game.age} ans, le moment que tu attendais arrive. Le club te parle de ton avenir professionnel. Tes dernières performances ont pesé dans la décision.`,choices};
+  }
+  if(game.pendingOffers&&game.pendingOffers.length && game.age>=17 && game.week===1){
+    const list=game.pendingOffers.map(o=>o.club).join(', ');
+    return {type:'MERCATO',text:`Le mercato commence. Après ta saison, plusieurs clubs ont demandé à ton agent de connaître tes conditions. ${list}.`,choices:[
+      ['Étudier les propositions',`Tu demandes à ton agent de comparer les projets et ton futur temps de jeu.`,{action:'listenTransfer'}],
+      ['Rester dans ton club',`Tu privilégies la continuité et le temps de jeu que tu as construit.`,{action:'stay'}],
+      ['Faire monter les enchères',`Tu laisses les clubs discuter pour voir jusqu'où ta cote peut monter.`,{action:'negotiate'}]
+    ]};
+  }
+  return null;
+}
+function applyCareerAction(ch){
+  if(ch.action==='signPro'){
+    game.status='Pro'; game.proOfferReady=false; game.pendingOffers=[]; game.rep=Math.min(100,game.rep+4);
+    game.lastNews={title:'PREMIER CONTRAT PROFESSIONNEL',text:`À ${game.age} ans, tu signes ton premier contrat professionnel avec ${game.club}.`};
+  } else if(ch.action==='listenPro'){
+    game.proOfferReady=false;
+    if(game.pendingOffers&&game.pendingOffers.length){ game.offer=game.pendingOffers[0]; }
+    else { game.status='Réserve'; game.lastNews={title:'PROJET À L’ÉTUDE',text:`Ton entourage prend le temps d’étudier ton avenir avant de signer.`}; }
+  } else if(ch.action==='delayPro'){
+    game.proOfferReady=false; game.status='Réserve'; game.form=Math.min(100,game.form+4); game.lastNews={title:'ENCORE UN PEU DE TEMPS',text:`Tu repousses ta signature professionnelle pour continuer à gagner du temps de jeu.`};
+  } else if(ch.action==='listenTransfer'){
+    if(game.pendingOffers&&game.pendingOffers.length)game.offer=game.pendingOffers[0];
+    game.lastNews={title:'OFFRES À L’ÉTUDE',text:`Ton agent commence à comparer les projets qui se présentent.`};
+  } else if(ch.action==='stay'){
+    game.pendingOffers=[]; game.mental=Math.min(100,game.mental+2); game.lastNews={title:'FIDÉLITÉ',text:`Tu restes à ${game.club} pour continuer à progresser dans un environnement que tu connais.`};
+  } else if(ch.action==='negotiate'){
+    game.mental=Math.max(0,game.mental-1); game.rep=Math.min(100,game.rep+2); game.lastNews={title:'MERCATO',text:`Ton agent laisse les clubs discuter. Ta saison précédente donne du poids aux négociations.`};
+  }
+}
+function acceptCareerOffer(){
+  if(!game.offer)return;
+  const old=game.club, target=clubs.find(c=>c.name===game.offer.club);
+  if(!target)return;
+  game.club=target.name;
+  if(game.status!=='Pro' && game.age>=18 && overall()>=58) game.status='Pro';
+  game.offer=null; game.pendingOffers=[]; game.proOfferReady=false;
+  game.rep=Math.min(100,game.rep+4); game.mental=Math.max(0,game.mental-2);
+  game.lastNews={title:'TRANSFERT',text:`Tu quittes ${old} pour ${target.name}. Le projet et le temps de jeu ont pesé dans ta décision.`};
+  save();renderCareer();
+}
+function roleForAge(){return statusLabel()}
+function makeEvent(){
+  const milestone=careerMilestoneEvent();
+  if(milestone) return milestone;
+  const forced=specialEvents[game.age];
+  if(forced&&((game.week-1)%26)===0&&game.age>=18){const p=eventPools[forced[0]]||eventPools.LIFE;const raw=p[Math.floor(rng()*p.length)];return {type:forced[0],text:forced[1],choices:genericChoices(forced[0],raw)};}
+  const pool=getPool();const picked=pool[Math.floor(rng()*pool.length)];
+  if(picked.dynamic==='MATCH')return dynamicMatchScene();
+  if(picked.dynamic==='TRAINING')return dynamicTrainingScene();
+  const raw=picked.raw;return {type:picked.type,text:raw[0],choices:genericChoices(picked.type,raw)};
+}
+function renderCareer(){
+  refreshPotential();
+  document.getElementById("topSeason").textContent=`${game.year} · ${seasonPhase()}`;
+  document.getElementById("avatar").textContent=game.name.charAt(0).toUpperCase();
+  document.getElementById("pName").textContent=game.name;
+  document.getElementById("pSub").textContent=`${game.nation} · ${game.position} · ${game.club} · ${roleForAge()}`;
+  document.getElementById("pAge").textContent=game.age;
+  document.getElementById("summary").innerHTML=`<span class="pill">${seasonLabel()}</span><span class="pill">${game.club}</span><span class="pill">${roleForAge()}</span><span class="pill">Potentiel ${"★".repeat(game.potentialStars)}</span><span class="pill">${game.seasonMatches} matchs</span><span class="pill">${game.seasonGoals} buts</span>`;
+  document.getElementById("stSpeed").textContent=Math.round(game.attrs.speed);document.getElementById("stFinish").textContent=Math.round(game.attrs.finish);document.getElementById("stDribble").textContent=Math.round(game.attrs.dribble);document.getElementById("stPass").textContent=Math.round(game.attrs.pass);document.getElementById("stPhysical").textContent=Math.round(game.attrs.physical);document.getElementById("stDefense").textContent=Math.round(game.attrs.defense);document.getElementById("stForm").textContent=Math.round(game.form);
+  document.getElementById("seasonline").innerHTML=[15,18,21,25,30,35,40].map(a=>`<i class="${game.age>=a?"on":""}"></i>`).join("");
+  let e=ensureEvent(); document.getElementById("eventType").textContent=e.type==="LIFE"?"ÉVÉNEMENT":e.type==="TRAINING"?"ENTRAÎNEMENT":e.type; document.getElementById("week").textContent=`Semaine ${((game.week-1)%26)+1} · ${game.year} · ${seasonPhase()}`; document.getElementById("story").textContent=e.text;
+  const result=document.getElementById("result");
+  if(game.pendingResult){document.getElementById("choices").innerHTML="";result.classList.add("show");result.innerHTML=`<b style="display:block;color:#f5f5f1;margin-bottom:7px">${game.pendingResult.title}</b><div>${game.pendingResult.text}</div><button class="cta" style="margin-top:13px" onclick="continueAfterResult()" type="button">Continuer →</button>`}else{document.getElementById("choices").innerHTML=e.choices.map((c,i)=>`<button class="action" onclick="choose(${i})"><b>${c[0]}</b><span>${c[1]}</span></button>`).join("");result.classList.remove("show");result.innerHTML=""}
+  renderOffer();renderNews();
+}
+function choose(i){
+  if(!game||game.pendingResult)return;
+  const e=ensureEvent(), c=e.choices[i]||e.choices[0], ch=c[2]||{};
+  const impact=applyChoice(ch); if(e.type==='CARRIÈRE'||e.type==='MERCATO')applyCareerAction(ch);
+  let match=null;if(e.type==='MATCH')match=matchOutcome(c[0],e.sceneId,c[2]?.action);
+  game.history.push({year:game.year,age:game.age,week:((game.week-1)%26)+1,club:game.club,type:e.type,choice:c[0]});
+  const lines=impact.map(x=>`${x.delta>0?"+":""}${x.delta} ${x.label}`);let text=lines.length?`<div class="impactLine">${lines.join(" · ")}</div>`:"";
+  if(e.type==='CARRIÈRE'||e.type==='MERCATO')text+=`<div class="matchReport"><p>${resultText(c[0],e.type)}</p></div>`;
+  else if(match){const role=match.starter?`Tu as débuté la rencontre et joué ${match.minutes} minutes.`:`Tu as commencé sur le banc avant d'entrer à la ${Math.max(46,90-match.minutes)}e minute pour ${match.minutes} minutes.`;const stats=`${match.goals} but${match.goals>1?'s':''} · ${match.assists} passe${match.assists>1?'s':''} décisive${match.assists>1?'s':''} · ${match.dribbles} dribble${match.dribbles>1?'s':''} réussi${match.dribbles>1?'s':''} · ${match.shots} tir${match.shots>1?'s':''}`;text+=`<div class="matchReport"><p><b>${game.club} ${match.teamGoals}-${match.oppGoals} ${match.opponent}</b></p><p>${role}</p><p>${match.moment}</p><p>${match.action}</p><p><b>Statistiques :</b> ${stats}. <b>Note : ${match.rating}/10.</b></p></div>`;if(match.deciding)text+=`<div class="matchAnim ${match.deciding==='goal'?'goal':'miss'}">${match.deciding==='goal'?'⚽ BUT !':'RATÉ…'}</div>`;}
+  else if(e.type==='TRAINING'){const best=impact.filter(x=>["vitesse","finition","dribble","passe","physique","défense"].includes(x.label)).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta))[0];text+=best?`<div class="matchReport"><p>La séance se termine. Le staff note surtout ton travail sur <b>${best.label}</b>. Selon la qualité de ta séance et ton état du jour, la progression est ${best.delta>0?"positive":"plus difficile que prévu"}.</p></div>`:`<div class="matchReport"><p>La séance est terminée. Le staff te laisse avec un axe de travail pour la prochaine semaine.</p></div>`;}
+  else text+=resultText(c[0],e.type);
+  game.pendingResult={title:e.type==='MATCH'?`MATCH TERMINÉ · « ${c[0]} »`:`${e.type} · « ${c[0]} »`,text};save();renderCareer();
+}
+function resultText(choice,type){
+  if(type==='CARRIÈRE'){
+    if(choice.includes('contrat'))return `Tu viens de franchir une étape majeure : tu es désormais <b>professionnel</b>. Le statut de ton joueur change, les matches pros deviennent accessibles et ton temps de jeu sera désormais jugé à un autre niveau.`;
+    if(choice.includes('autres clubs'))return `Tu ne signes pas immédiatement. Ton agent va comparer les projets, le rôle proposé et la concurrence avant que tu prennes une décision.`;
+    return `Tu restes encore dans le parcours de formation/réserve. Ton objectif est clair : produire une saison suffisamment forte pour forcer la prochaine porte.`;
+  }
+  if(type==='MERCATO')return `Ton agent commence à gérer les intérêts extérieurs. Les propositions dépendront de ton niveau, de ta saison et du rôle que les clubs peuvent réellement te proposer.`;
+  if(type==='INJURY')return `<div class="matchReport"><p>Le staff suivra l'évolution de ton état dans les prochaines semaines. Ta décision peut accélérer ton retour ou prolonger ta période d'adaptation.</p></div>`;
+  return `<div class="matchReport"><p>Cette décision rejoint toutes les autres qui construisent ta carrière. Le résultat dépendra aussi de ta forme, de tes qualités et d’une part de hasard.</p></div>`;
+}
+function finishSeason(){
+  calculateTrophies();
+  let prev={potentialStars:game.potentialStars,mental:game.mental,form:game.form,rep:game.rep,status:clubStatus(),overall:overall()};
+  const seasonSnapshot={matches:game.seasonMatches,starts:game.seasonStarts,goals:game.seasonGoals,assists:game.seasonAssists,rating:game.seasonMatches?Math.round((game.seasonRating/game.seasonMatches)*10)/10:0,man:game.seasonMan,cards:game.seasonCards,trophies:[...(game.seasonTrophies||[])]};
+  game.lastSeason=seasonSnapshot;
+  game.form=Math.min(100,game.form+15);
+  if(game.seasonMatches>10&&game.seasonGoals>4)game.rep=Math.min(100,game.rep+5);
+  refreshPotential();
+  game.age++;game.year++;game.week=1;game.currentEvent=null;game.offer=null;game.proOfferReady=false;game.lastSeasonBefore=prev;
+  const dev=resolveDevelopment();
+  generateCareerOffers();
+  // Le passage en professionnel est préparé ici, puis joué comme un vrai événement au début de la nouvelle saison.
+  if(dev==='proOffer')game.proOfferReady=true;
+  game.seasonGoals=0;game.seasonAssists=0;game.seasonMatches=0;game.seasonStarts=0;game.seasonRating=0;game.seasonMan=0;game.seasonCards=0;game.seasonTrophies=[];
+  save();renderSeason();
+}
+function renderSeason(){
+  show("season");let s=game.lastSeason||{matches:0,starts:0,goals:0,assists:0,rating:0,man:0,cards:0,trophies:[]};
+  document.getElementById("topSeason").textContent=`${game.year-1}/${String(game.year).slice(-2)}`;document.getElementById("seasonEyebrow").textContent=`Bilan · ${game.year-1}/${String(game.year).slice(-2)}`;document.getElementById("seasonHero").textContent=`${game.name} · ${s.rating}/10`;document.getElementById("seasonLead").textContent=seasonNarrative(s);
+  document.getElementById("seasonStats").innerHTML=[["Matchs",s.matches],["Titulaires",s.starts],["Buts",s.goals],["Passes",s.assists],["Note moyenne",s.rating],["Homme du match",s.man],["Cartons",s.cards],["Âge",game.age-1],["Club",game.club]].map(x=>`<div class="seasonstat"><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join("");
+  document.getElementById("trophies").innerHTML=s.trophies.length?s.trophies.map(t=>`<div class="trophy"><span>${t}</span><span class="badge">REMPorté</span></div>`).join(""):`<div class="summarybox">Aucun trophée cette saison. Tout reste à construire.</div>`;
+  let p=game.lastSeasonBefore||{};document.getElementById("progression").innerHTML=[["Potentiel",p.potentialStars,game.potentialStars],["Statut",p.status,clubStatus()],["Niveau",p.overall,overall()],["Forme",p.form,game.form],["Cote",p.rep,game.rep]].map(x=>`<div><small>${x[0]}</small><b>${x[1]} → ${x[2]}</b></div>`).join("");
+  let memories=[];if(s.goals>=8)memories.push(`${s.goals} buts cette saison.`);if(s.assists>=6)memories.push(`${s.assists} passes décisives.`);if(s.trophies.length)memories.push(`${s.trophies.length} distinction(s) remportée(s).`);if(s.man)memories.push(`${s.man} fois homme du match.`);if(!memories.length)memories.push("Une saison de construction. Les bases sont posées pour la suite.");document.getElementById("seasonSummary").textContent=memories.join(" ");
+  const so=document.getElementById('seasonOffers');
+  let html='';
+  if(game.proOfferReady)html+=`<div class="offer"><div class="eyebrow">ÉTAPE MAJEURE</div><div class="club">Premier contrat professionnel</div><div class="small">${game.club} · une décision importante t'attend au début de la nouvelle saison.</div></div>`;
+  if(game.pendingOffers&&game.pendingOffers.length){html+=`<div class="sectiontitle">Clubs intéressés</div>`+game.pendingOffers.map(o=>`<div class="offer"><div class="eyebrow">INTÉRÊT</div><div class="club">${o.club}</div><div class="small">${o.role} · ${o.reason}</div></div>`).join('');}
+  so.innerHTML=html;save();
+}
+function nextSeason(){show("career");renderCareer()}
+function maybeTransferOffer(){if(game.offer&&game.offer.pending){game.offer=null}}
+function renderOffer(){
+  let slot=document.getElementById("offerSlot");
+  if(game.offer&&game.offer.club){let c=clubs.find(x=>x.name===game.offer.club);slot.innerHTML=c?`<div class="offer"><div class="eyebrow">MERCATO · PROPOSITION</div><div class="club">${c.name}</div><div class="small">${c.country} · niveau ${"★".repeat(c.lvl)} · ${c.constraint}</div><button type="button" onclick="acceptCareerOffer()">Accepter le projet</button></div>`:'';return}
+  slot.innerHTML="";
+}
+function beginCareer(){
+  if(!setup.academy){alert("Choisis un club de départ.");return}
+  const attrs=initialAttributes();
+  let g={version:10,name:`${setup.name} ${setup.surname}`.trim(),nation:setup.nation,position:positionChoices.find(x=>x.id===setup.position)?.name||"Milieu",style:setup.style,environment:setup.environment,positionTrait:positionChoices.find(x=>x.id===setup.position)?.trait||"",styleTrait:styleChoices.find(x=>x.id===setup.style)?.trait||"",environmentTrait:environmentChoices.find(x=>x.id===setup.environment)?.trait||"",club:setup.academy,status:'U16',age:15,year:2026,week:1,attrs,mental:50,form:84,rep:0,money:0,goals:0,assists:0,matches:0,starts:0,seasonGoals:0,seasonAssists:0,seasonMatches:0,seasonStarts:0,seasonRating:0,seasonMan:0,seasonCards:0,selectionCaps:0,trophies:[],history:[],seed:Math.floor(Math.random()*2147483647),injuryWeeks:0,injuryName:"",currentEvent:null,currentIndex:0,pendingResult:null,offer:null,lastNews:null,adapt:0,recentMatchScenes:[],recentTrainingScenes:[],retired:false,proOfferReady:false,pendingOffers:[]};
+  game=g;refreshPotential();save();show("career");renderCareer();
+}
+function continueCareer(){if(!game||game.version!==10){alert("Cette sauvegarde utilise une ancienne version. Crée une nouvelle carrière pour profiter du système de carrière réaliste.");newCareer();return}if(game.retired){retire();return}show("career");renderCareer()}
+
+document.getElementById("topSeason").textContent=new Date().getFullYear();
+if(game&&!game.retired){document.getElementById("continueBtn").style.display="block";document.getElementById("homeSave").textContent=`Carrière de ${game.name} · ${game.age} ans`}
+</script>
+</body>
+</html>
