@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Le Monde — Observation</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07090a;color:#f4f1ea;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;touch-action:none}
+#world{position:fixed;inset:0;overflow:hidden;background:#090b0c}
+.scene{position:absolute;inset:-7%;width:114%;height:114%;object-fit:cover;opacity:0;transition:opacity 2.2s ease;filter:saturate(.92) contrast(1.04) brightness(.82);will-change:transform}
+.scene.active{opacity:1}
+#veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.38),transparent 25%,transparent 72%,rgba(0,0,0,.58));pointer-events:none}
+#grain{position:absolute;inset:-50%;opacity:.055;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");animation:grain .18s steps(2) infinite}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(2%,-1%)}50%{transform:translate(-1%,2%)}75%{transform:translate(1%,1%)}100%{transform:translate(-2%,-2%)}}
+#start{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 50% 42%,rgba(48,55,55,.72),rgba(5,7,8,.98) 72%)}
+.card{width:min(560px,calc(100vw - 32px));padding:34px 28px;border:1px solid rgba(255,255,255,.14);border-radius:28px;background:rgba(10,12,13,.78);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 30px 100px rgba(0,0,0,.55)}
+.eyebrow{font-size:11px;letter-spacing:5px;opacity:.52;margin-bottom:13px}.title{font-family:Georgia,serif;font-size:39px;font-weight:500;letter-spacing:-1.4px;margin:0 0 14px}.intro{font-size:15px;line-height:1.65;color:rgba(244,241,234,.75);max-width:480px}.tags{display:flex;gap:7px;flex-wrap:wrap;margin:20px 0}.tag{font-size:10px;letter-spacing:1px;padding:7px 9px;border:1px solid rgba(255,255,255,.13);border-radius:999px;color:rgba(244,241,234,.7)}
+#enter{width:100%;border:0;border-radius:15px;padding:16px 18px;background:#f2eee5;color:#111;font-weight:800;font-size:15px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}#enter:active{transform:scale(.985)}
+#hud{position:fixed;z-index:10;left:18px;right:18px;top:calc(14px + env(safe-area-inset-top));display:flex;justify-content:space-between;gap:10px;pointer-events:none}.pill{padding:10px 13px;border-radius:15px;border:1px solid rgba(255,255,255,.14);background:rgba(7,9,10,.55);backdrop-filter:blur(14px);font-size:11px;letter-spacing:.8px}.live:before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#d8d0c4;margin-right:7px;box-shadow:0 0 12px rgba(255,255,255,.7);animation:pulse 1.5s infinite}@keyframes pulse{50%{opacity:.25}}
+#brand{position:fixed;z-index:9;left:22px;top:86px;font-family:Georgia,serif;font-size:23px;letter-spacing:7px;text-shadow:0 3px 15px #000}.brand2{display:block;font-family:-apple-system,sans-serif;font-size:9px;letter-spacing:5px;opacity:.55;margin-top:7px}
+#info{position:fixed;z-index:11;left:22px;top:155px;width:min(350px,calc(100vw - 44px));padding:18px;border-radius:22px;background:rgba(8,10,11,.66);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 18px 60px rgba(0,0,0,.35);transition:transform .35s,opacity .35s}.section{font-size:9px;letter-spacing:3px;opacity:.5;margin-bottom:8px}.big{font-size:18px;margin-bottom:15px}.line{height:1px;background:rgba(255,255,255,.1);margin:12px 0}.small{font-size:11px;line-height:1.55;opacity:.68}
+#event{position:fixed;z-index:11;right:18px;bottom:calc(74px + env(safe-area-inset-bottom));width:min(300px,calc(100vw - 36px));padding:13px 15px;border-radius:16px;background:rgba(8,10,11,.62);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);font-size:11px;line-height:1.45;opacity:0;transform:translateY(10px);transition:.5s}.show{opacity:1!important;transform:none!important}
+#hint{position:fixed;z-index:12;left:50%;bottom:18px;transform:translateX(-50%);padding:11px 15px;border-radius:999px;background:rgba(8,10,11,.66);border:1px solid rgba(255,255,255,.13);backdrop-filter:blur(14px);font-size:10px;white-space:nowrap;color:rgba(255,255,255,.68)}
+#focus{position:fixed;z-index:12;right:18px;top:calc(78px + env(safe-area-inset-top));padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(8,10,11,.55);color:#fff;font-size:10px;backdrop-filter:blur(14px);display:none}
+@media(max-width:600px){.title{font-size:34px}.card{padding:28px 23px}.intro{font-size:14px}#info{top:142px}.pill{font-size:10px;padding:9px 10px}.hint{} }
+</style>
+</head>
+<body>
+<div id="world">
+ <img class="scene active" id="sceneA" alt="Appartement observé" src="https://d8j0ntlcm91z4.cloudfront.net/user_3HjtSShN69d4MsjXsfGGf4MjUMh/hf_20260909_093849_b67fb467-7157-420a-a16a-89893ac09364.png">
+ <img class="scene" id="sceneB" alt="Appartement observé" src="https://d8j0ntlcm91z4.cloudfront.net/user_3HjtSShN69d4MsjXsfGGf4MjUMh/hf_20260908_225540_e9dd9801-eba1-4944-b76d-3bf6f81de3a7.png">
+ <div id="veil"></div><div id="grain"></div>
+</div>
+<div id="start"><div class="card"><div class="eyebrow">LE MONDE</div><h1 class="title">Tu n'es qu'un observateur.</h1><div class="intro">Ici, tu ne contrôles personne. Tu regardes. Elias et Maya ont leur propre vie, leurs habitudes, leurs envies et leurs petits choix. Ils ne savent pas que tu es là.</div><div class="tags"><span class="tag">OBSERVATION</span><span class="tag">TEMPS CONTINU</span><span class="tag">MÉMOIRE</span><span class="tag">INITIATIVE</span></div><button id="enter" type="button">Entrer dans le monde</button></div></div>
+<div id="hud"><div class="pill" id="clock">—</div><div class="pill live">OBSERVATION · CAMÉRA LIBRE</div></div>
+<div id="brand">LE MONDE<span class="brand2">OBSERVATEUR</span></div>
+<div id="info"><div class="section">TEMPS</div><div class="big" id="timeText">—</div><div class="line"></div><div class="section">AMBIANCE</div><div class="big" id="mood">Calme · intérieur</div><div class="line"></div><div class="section">HABITANTS</div><div class="big">2</div><div class="line"></div><div class="section">DERNIÈRE OBSERVATION</div><div class="small" id="eventText">Le monde vient de reprendre son cours.</div></div>
+<div id="event"></div><div id="hint">Glisse pour observer · pince pour zoomer · touche un habitant pour l'observer</div><button id="focus">FOCUS · ELIAS / MAYA</button>
+<script>
+(function(){
+'use strict';
+var started=false, last=Date.now(), scene=0, zoom=1, dragging=false, x=0,y=0,sx=0,sy=0, pinch=0;
+var A=document.getElementById('sceneA'),B=document.getElementById('sceneB'), info=document.getElementById('info'), eventBox=document.getElementById('event'), clock=document.getElementById('clock'), timeText=document.getElementById('timeText'), eventText=document.getElementById('eventText'), mood=document.getElementById('mood');
+var state=JSON.parse(localStorage.getItem('le_monde_state_v4')||'null')||{worldMs:Date.now(),lastVisit:Date.now(),events:0};
+var now=new Date();
+function pad(n){return String(n).padStart(2,'0')}
+function formatTime(d){return ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'][d.getDay()]+' '+pad(d.getHours())+':'+pad(d.getMinutes())}
+function save(){state.lastVisit=Date.now();localStorage.setItem('le_monde_state_v4',JSON.stringify(state))}
+function showEvent(t){eventText.textContent=t;eventBox.textContent=t;eventBox.classList.add('show');clearTimeout(showEvent.t);showEvent.t=setTimeout(function(){eventBox.classList.remove('show')},4800)}
+var events=['Maya s’est levée pour aller chercher quelque chose dans la cuisine.','Elias a changé de pièce sans raison particulière.','Un moment de silence s’installe dans l’appartement.','Maya s’est arrêtée quelques secondes devant la fenêtre.','Elias consulte son téléphone puis le repose.','Ils reprennent chacun leur activité.'];
+function update(){var d=new Date(state.worldMs);clock.textContent=formatTime(d);timeText.textContent=formatTime(d);var h=d.getHours();mood.textContent=(h>=23||h<7)?'Calme · nuit':(h<11?'Matin · tranquille':(h<18?'Après-midi · vivant':'Soir · intérieur'));}
+function switchScene(){scene=1-scene;var a=scene?A:B,b=scene?B:A;a.classList.add('active');b.classList.remove('active');a.style.transform='scale('+(1.02+Math.random()*.08)+') translate('+(-2+Math.random()*4)+'%,'+(-2+Math.random()*4)+'%)';}
+function animate(){if(!started)return;var t=performance.now()/1000;var z=1.025+Math.sin(t*.07)*.018;var pan=Math.sin(t*.11)*1.2;var el=scene?A:B;el.style.transform='scale('+(z*zoom)+') translate('+pan+'%,'+(-.5+Math.cos(t*.09)*.5)+'%)';requestAnimationFrame(animate)}
+function enter(){started=true;document.getElementById('start').style.display='none';var elapsed=Math.max(0,Date.now()-state.lastVisit);state.worldMs+=elapsed;state.events+=Math.floor(elapsed/90000);save();update();showEvent('Tu entres dans le monde. Ils ne peuvent pas te voir.');animate();}
+document.getElementById('enter').addEventListener('click',enter);
+setInterval(function(){if(!started)return;state.worldMs+=60000;save();update();if(Math.random()<.32){showEvent(events[Math.floor(Math.random()*events.length)]);switchScene()}},60000);
+setInterval(function(){if(!started)return;var e=events[Math.floor(Math.random()*events.length)];showEvent(e);state.events++;save();},13000);
+function pointerDown(e){dragging=true;sx=e.clientX;sy=e.clientY;x=0;y=0}
+function pointerMove(e){if(!dragging)return;var dx=e.clientX-sx,dy=e.clientY-sy;sx=e.clientX;sy=e.clientY;var el=scene?A:B;var tx=Math.max(-7,Math.min(7,parseFloat(el.dataset.tx||0)+dx*.018));var ty=Math.max(-6,Math.min(6,parseFloat(el.dataset.ty||0)+dy*.018));el.dataset.tx=tx;el.dataset.ty=ty;el.style.transform='scale('+(1.04*zoom)+') translate('+tx+'%,'+ty+'%)'}
+function pointerUp(){dragging=false}
+world.addEventListener('pointerdown',pointerDown);world.addEventListener('pointermove',pointerMove);world.addEventListener('pointerup',pointerUp);world.addEventListener('pointercancel',pointerUp);
+world.addEventListener('wheel',function(e){e.preventDefault();zoom=Math.max(.92,Math.min(1.5,zoom*(e.deltaY>0?.94:1.06)))},{passive:false});
+var touches={};world.addEventListener('touchstart',function(e){for(var t of e.changedTouches)touches[t.identifier]={x:t.clientX,y:t.clientY};if(Object.keys(touches).length===2){var q=Object.values(touches);pinch=Math.hypot(q[0].x-q[1].x,q[0].y-q[1].y)}},{passive:false});
+world.addEventListener('touchmove',function(e){var q=Object.values(touches);if(q.length!==2)return;for(var t of e.changedTouches)if(touches[t.identifier]){touches[t.identifier].x=t.clientX;touches[t.identifier].y=t.clientY}q=Object.values(touches);var n=Math.hypot(q[0].x-q[1].x,q[0].y-q[1].y);if(pinch)zoom=Math.max(.92,Math.min(1.5,zoom*(n/pinch)));pinch=n;e.preventDefault()},{passive:false});
+world.addEventListener('touchend',function(e){for(var t of e.changedTouches)delete touches[t.identifier]},{passive:false});
+update();
+})();
+</script>
+</body></html>
