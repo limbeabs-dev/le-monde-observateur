@@ -4,7 +4,7 @@ import requests
 import subprocess
 from pathlib import Path
 
-PEXELS_API_KEY = os.environ["PEXELS_API_KEY"].strip()
+PEXELS_API_KEY = "".join(os.environ["PEXELS_API_KEY"].split())
 
 OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
