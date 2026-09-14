@@ -33,8 +33,9 @@ jobs:
         run: |
           cd kids-shorts-factory
           python generator.py
-    - name: Conserver le Short
-      uses: actions/upload-artifact@v4
-      with:
-        name: kids-short
-        path: kids-shorts-factory/output/
+
+      - name: Conserver le Short
+        uses: actions/upload-artifact@v4
+        with:
+          name: kids-short
+          path: kids-shorts-factory/output/
