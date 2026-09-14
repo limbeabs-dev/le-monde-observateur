@@ -10,14 +10,42 @@ OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 SEARCHES = [
-    "cute cat",
-    "cute dog",
-    "cute rabbit",
-    "funny animals",
-    "kids animals"
+    {
+        "query": "cute cat",
+        "titles": [
+            "LE CHAT QUI CACHE UN SECRET 🐱",
+            "TU AS VU CE QU'IL FAIT ? 😳",
+            "LE CHAT LE PLUS CURIEUX DU MONDE"
+        ]
+    },
+    {
+        "query": "cute dog",
+        "titles": [
+            "CE CHIEN A UNE IDÉE 😂🐶",
+            "IL A COMPRIS QUELQUE CHOSE...",
+            "LE CHIEN LE PLUS MALIN ?"
+        ]
+    },
+    {
+        "query": "cute rabbit",
+        "titles": [
+            "CE PETIT LAPIN EST TROP CURIEUX 🐰",
+            "REGARDE BIEN SES OREILLES 👀",
+            "LE LAPIN QUI NE TIENT PAS EN PLACE"
+        ]
+    },
+    {
+        "query": "funny animals",
+        "titles": [
+            "ÇA NE S'EST PAS PASSÉ COMME PRÉVU 😂",
+            "ATTENDS LA FIN 😳",
+            "LE MOMENT LE PLUS DRÔLE"
+        ]
+    }
 ]
 
-def search_pexels(query, per_page=10):
+
+def search_pexels(query, per_page=15):
     url = "https://api.pexels.com/videos/search"
 
     headers = {
@@ -39,16 +67,14 @@ def search_pexels(query, per_page=10):
 
     response.raise_for_status()
 
-    return response.json()["videos"]
+    return response.json().get("videos", [])
 
 
 def choose_video(videos):
     usable = []
 
     for video in videos:
-        files = video.get("video_files", [])
-
-        for file in files:
+        for file in video.get("video_files", []):
             width = file.get("width")
             height = file.get("height")
             link = file.get("link")
@@ -56,7 +82,7 @@ def choose_video(videos):
             if not link or not width or not height:
                 continue
 
-            if height >= width:
+            if height >= width and width >= 500:
                 usable.append(file)
 
     if not usable:
@@ -66,7 +92,12 @@ def choose_video(videos):
 
 
 def download_video(url, destination):
-    response = requests.get(url, stream=True, timeout=60)
+    response = requests.get(
+        url,
+        stream=True,
+        timeout=60
+    )
+
     response.raise_for_status()
 
     with open(destination, "wb") as file:
@@ -75,10 +106,71 @@ def download_video(url, destination):
                 file.write(chunk)
 
 
+def create_short(source, final, title):
+    safe_title = (
+        title
+        .replace("'", "")
+        .replace(":", "")
+        .replace("!", "")
+        .replace("?", "")
+        .replace("🐱", "")
+        .replace("🐶", "")
+        .replace("🐰", "")
+        .replace("😂", "")
+        .replace("😳", "")
+        .replace("👀", "")
+        .strip()
+    )
+
+    filter_text = (
+        "scale=1080:1920:force_original_aspect_ratio=increase,"
+        "crop=1080:1920,"
+        "drawbox=x=0:y=0:w=1080:h=260:color=black@0.45:t=fill,"
+        "drawtext="
+        "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:"
+        f"text='{safe_title}':"
+        "fontcolor=white:"
+        "fontsize=58:"
+        "x=(w-text_w)/2:"
+        "y=80:"
+        "text_shaping=1"
+    )
+
+    command = [
+        "ffmpeg",
+        "-y",
+        "-i",
+        str(source),
+        "-t",
+        "15",
+        "-vf",
+        filter_text,
+        "-c:v",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "20",
+        "-pix_fmt",
+        "yuv420p",
+        "-an",
+        str(final)
+    ]
+
+    subprocess.run(
+        command,
+        check=True
+    )
+
+
 def create_test_video():
-    query = random.choice(SEARCHES)
+    choice = random.choice(SEARCHES)
+
+    query = choice["query"]
+    title = random.choice(choice["titles"])
 
     print(f"Recherche Pexels : {query}")
+    print(f"Titre choisi : {title}")
 
     videos = search_pexels(query)
 
@@ -102,32 +194,14 @@ def create_test_video():
 
     print("Création du Short...")
 
-    command = [
-        "ffmpeg",
-        "-y",
-        "-i",
-        str(source),
-        "-t",
-        "15",
-        "-vf",
-        "scale=1080:1920:force_original_aspect_ratio=increase,"
-        "crop=1080:1920",
-        "-c:v",
-        "libx264",
-        "-preset",
-        "veryfast",
-        "-crf",
-        "23",
-        "-an",
-        str(final)
-    ]
-
-    subprocess.run(
-        command,
-        check=True
+    create_short(
+        source,
+        final,
+        title
     )
 
     print(f"Short créé : {final}")
+    print("Génération terminée avec succès.")
 
 
 if __name__ == "__main__":
